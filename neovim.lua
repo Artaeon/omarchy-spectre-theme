@@ -2,7 +2,7 @@ return {
   {
     "sainnhe/everforest",
     priority = 1000,
-    config = function()
+    init = function()
       vim.o.background = "light"
     end,
   },
