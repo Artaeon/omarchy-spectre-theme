@@ -2350,6 +2350,664 @@ def wallpaper_sword_of_spirit():
     print("Saved backgrounds/22-sword-of-spirit.png")
 
 
+# ─────────────────────────────────────────────────────────────
+# 23. Digital Genesis — God coding the universe (John 1:1)
+# ─────────────────────────────────────────────────────────────
+def wallpaper_digital_genesis():
+    """Terminal showing God 'compiling' the universe — John 1:1."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(101)
+
+    font_bg = get_font(10)
+    font_sm = get_font(16)
+    font_md = get_font(22)
+    font_lg = get_font(28)
+    font_term = get_font(20)
+    font_verse = get_font(36)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    dim_green = (0, 120, 30)
+    amber = (180, 255, 100)
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter — faint stars / data dust
+    for _ in range(4000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.01, 0.04)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Terminal window
+    term_x = 400
+    term_y = 200
+    term_w = W - 800
+    term_h = H - 500
+
+    # Terminal border
+    border_c = blend(BG, green, 0.5)
+    draw.rectangle([term_x, term_y, term_x + term_w, term_y + term_h], outline=border_c, width=2)
+
+    # Title bar
+    title_bar_h = 40
+    draw.rectangle([term_x, term_y, term_x + term_w, term_y + title_bar_h],
+                    fill=blend(BG, green, 0.12))
+    draw.text((term_x + 15, term_y + 8), "● ● ●", fill=blend(BG, green, 0.4), font=font_sm)
+    title_text = "root@heaven:~/creation$ genesis --compile-universe"
+    draw.text((term_x + 100, term_y + 10), title_text,
+              fill=blend(BG, green, 0.6), font=font_term)
+
+    # Terminal content — God "coding" the universe
+    commands = [
+        ("$ ./genesis.sh --day 1", green, 0.7),
+        ("", None, 0),
+        ("[INIT] Initializing void...", dim_green, 0.45),
+        ("[EXEC] CREATE light;", bright, 0.85),
+        ("[  OK] Light compiled successfully.", green, 0.6),
+        ("[EXEC] SEPARATE light FROM darkness;", bright, 0.85),
+        ("[  OK] Day/Night modules loaded.", green, 0.6),
+        ("", None, 0),
+        ("$ ./genesis.sh --day 2", green, 0.7),
+        ("[EXEC] CREATE firmament;", bright, 0.85),
+        ("[  OK] Atmosphere v1.0 deployed.", green, 0.6),
+        ("", None, 0),
+        ("$ ./genesis.sh --day 3", green, 0.7),
+        ("[EXEC] GATHER waters;", bright, 0.85),
+        ("[EXEC] CREATE vegetation --seed --fruit;", bright, 0.85),
+        ("[  OK] Biosphere initialized. 350,000 species loaded.", green, 0.6),
+        ("", None, 0),
+        ("$ ./genesis.sh --day 4", green, 0.7),
+        ("[EXEC] CREATE sun moon stars;", bright, 0.85),
+        ("[  OK] Celestial objects: 200 billion galaxies online.", green, 0.6),
+        ("", None, 0),
+        ("$ ./genesis.sh --day 5-6", green, 0.7),
+        ("[EXEC] CREATE living_creatures --all;", bright, 0.85),
+        ("[EXEC] CREATE human --image=GOD --name=Adam;", amber, 0.92),
+        ("[  OK] Consciousness module: ACTIVE", green, 0.6),
+        ("[  OK] Free will: ENABLED", green, 0.6),
+        ("", None, 0),
+        ("$ ./genesis.sh --day 7", green, 0.7),
+        ("[DONE] Universe compilation complete.", bright, 0.9),
+        ("[REST] Sabbath mode activated.", amber, 0.8),
+        ("", None, 0),
+        ("$ echo $STATUS", green, 0.6),
+        (">>> And God saw every thing that He had made,", bright, 0.85),
+        (">>> and, behold, it was very good.", bright, 0.85),
+        ("", None, 0),
+        ("$ _", green, 0.9),
+    ]
+
+    line_y = term_y + title_bar_h + 20
+    line_h = 28
+    for text, color, alpha in commands:
+        if text and color:
+            draw.text((term_x + 20, line_y), text,
+                      fill=blend(BG, color, alpha), font=font_term)
+        line_y += line_h
+
+    # Matrix rain outside the terminal (cosmic data)
+    for col in range(0, W, 40):
+        if term_x < col < term_x + term_w:
+            continue
+        stream_len = random.randint(8, 20)
+        start_y = random.randint(-100, H)
+        for i in range(stream_len):
+            y = start_y + i * 34
+            if y < 0 or y > H:
+                continue
+            t = i / stream_len
+            if i == 0:
+                color = blend(BG, bright, 0.80)
+            else:
+                color = blend(BG, green, max(0.05, 0.35 * (1 - t)))
+            draw.text((col, y), random.choice(MATRIX_CHARS), fill=color, font=font_sm)
+
+    # Stars/galaxies forming above terminal
+    for _ in range(300):
+        x = random.randint(0, W)
+        y = random.randint(0, term_y - 20)
+        r = random.randint(1, 3)
+        a = random.uniform(0.2, 0.7)
+        draw.ellipse([x-r, y-r, x+r, y+r], fill=blend(BG, bright, a))
+
+    # Verse at bottom
+    verse = '"In the beginning was the Word, and the Word was with God, and the Word was God."'
+    tw = draw.textlength(verse, font=font_verse)
+    draw.text(((W - tw) // 2, H - 150), verse, fill=blend(BG, bright, 0.75), font=font_verse)
+    ref = "JOHN 1:1"
+    tw = draw.textlength(ref, font=font_md)
+    draw.text(((W - tw) // 2, H - 95), ref, fill=blend(BG, green, 0.55), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.3))
+    img.save("backgrounds/23-digital-genesis.png", "PNG", optimize=True)
+    print("Saved backgrounds/23-digital-genesis.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 24. Matrix Baptism — Data cascade baptism (Romans 6:4)
+# ─────────────────────────────────────────────────────────────
+def wallpaper_matrix_baptism():
+    """Figure being baptized in a cascade of Matrix data — Romans 6:4."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(604)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(22)
+    font_lg = get_font(30)
+    font_verse = get_font(34)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    water_green = (0, 200, 120)
+    chars = MATRIX_CHARS + list("01~≈")
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(4000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.04)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Water line — horizontal divide
+    water_y = cy + 150
+    # Water surface with wave effect
+    for x in range(0, W, 3):
+        wave = int(8 * math.sin(x * 0.015) + 5 * math.sin(x * 0.03))
+        wy = water_y + wave
+        draw.line([(x, wy), (x, wy + 2)], fill=blend(BG, water_green, 0.6), width=2)
+
+    # Underwater area — dense flowing data
+    for y in range(water_y + 20, H, 12):
+        for x in range(0, W, 20):
+            depth = (y - water_y) / (H - water_y)
+            a = random.uniform(0.08, 0.25) * (1 - depth * 0.5)
+            wave_x = x + int(10 * math.sin(y * 0.02 + x * 0.01))
+            char = random.choice("~≈" + "".join(MATRIX_CHARS[:10]))
+            draw.text((wave_x, y), char, fill=blend(BG, water_green, a), font=font_sm)
+
+    # Figure emerging from water — upper body above, blending below
+    def in_figure(px, py):
+        nx = (px - cx) / 250
+        ny = (py - cy) / 400
+
+        # Head
+        if nx**2 + (ny + 0.6)**2 < 0.04:
+            return "head"
+        # Shoulders/upper body
+        if -0.35 < ny < -0.2 and abs(nx) < 0.3:
+            return "body"
+        # Arms raised upward and outward
+        if -0.7 < ny < -0.3:
+            for sign in [-1, 1]:
+                arm_x = sign * (0.3 + 0.2 * ((-ny - 0.3) / 0.4))
+                if abs(nx - arm_x) < 0.06:
+                    return "arms"
+        # Lower body (submerged, fainter)
+        if -0.2 < ny < 0.6 and abs(nx) < 0.25 - 0.05 * max(0, ny):
+            return "submerged"
+        return None
+
+    # Fill figure
+    step = 12
+    for y in range(cy - 350, cy + 400, step):
+        for x in range(cx - 250, cx + 250, step):
+            part = in_figure(x, y)
+            if part == "head":
+                a = random.uniform(0.75, 0.95)
+                draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, bright, a), font=font_lg)
+            elif part == "body" or part == "arms":
+                a = random.uniform(0.55, 0.80)
+                draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_md)
+            elif part == "submerged":
+                a = random.uniform(0.15, 0.35)
+                draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, water_green, a), font=font_sm)
+
+    # Massive data cascade pouring down onto the figure from above
+    for col in range(cx - 200, cx + 200, 22):
+        stream_len = random.randint(15, 40)
+        for i in range(stream_len):
+            y = 50 + i * 30
+            if y > cy - 100:
+                break
+            x = col + random.randint(-8, 8)
+            t = i / stream_len
+            if i == 0:
+                color = blend(BG, bright, 0.95)
+            else:
+                color = blend(BG, green, max(0.1, 0.80 * (1 - t * 0.5)))
+            draw.text((x, y), random.choice(MATRIX_CHARS), fill=color, font=font_md)
+
+    # Splash particles where cascade meets water
+    for _ in range(150):
+        angle = random.uniform(-math.pi, 0)
+        r = random.uniform(20, 200)
+        x = cx + int(r * math.cos(angle))
+        y = water_y - int(r * math.sin(angle) * 0.5)
+        a = random.uniform(0.3, 0.7) * (1 - r / 200)
+        draw.text((x, y), random.choice("~≈•"), fill=blend(BG, water_green, a), font=font_sm)
+
+    # Light radiating from figure
+    for angle_deg in range(0, 360, 8):
+        angle = math.radians(angle_deg)
+        for r in range(50, 500, 3):
+            x = cx + int(r * math.cos(angle))
+            y = cy - 100 + int(r * math.sin(angle))
+            if 0 <= x < W and 0 <= y < H:
+                a = 0.04 * (1 - r / 500) ** 2
+                if a > 0.002:
+                    draw.point((x, y), fill=blend(BG, bright, a))
+
+    # Verse
+    verse = '"We were buried with Him through baptism into death,'
+    verse2 = 'that just as Christ was raised, we too may walk in newness of life."'
+    tw = draw.textlength(verse, font=font_verse)
+    tw2 = draw.textlength(verse2, font=font_verse)
+    draw.text(((W - tw) // 2, H - 170), verse, fill=blend(BG, bright, 0.75), font=font_verse)
+    draw.text(((W - tw2) // 2, H - 125), verse2, fill=blend(BG, bright, 0.75), font=font_verse)
+    ref = "ROMANS 6:4"
+    tw = draw.textlength(ref, font=font_md)
+    draw.text(((W - tw) // 2, H - 70), ref, fill=blend(BG, green, 0.55), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.3))
+    img.save("backgrounds/24-matrix-baptism.png", "PNG", optimize=True)
+    print("Saved backgrounds/24-matrix-baptism.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 25. Firewall of Faith — Cyber shield (Psalm 91:4)
+# ─────────────────────────────────────────────────────────────
+def wallpaper_firewall_faith():
+    """Cybersecurity firewall protecting a cross — Psalm 91:4."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(914)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(22)
+    font_lg = get_font(30)
+    font_verse = get_font(32)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    red = (255, 60, 60)
+    red_dim = (120, 30, 30)
+    amber = (200, 200, 50)
+    chars = MATRIX_CHARS + list("01✝")
+
+    cx, cy = W // 2, H // 2
+
+    # Background — hostile incoming attacks (red data streams from edges)
+    for _ in range(4000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.04)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Incoming red attack streams from all sides
+    for _ in range(80):
+        side = random.choice(["top", "bottom", "left", "right"])
+        if side == "top":
+            sx, sy = random.randint(0, W), 0
+            dx, dy = random.uniform(-0.3, 0.3), 1
+        elif side == "bottom":
+            sx, sy = random.randint(0, W), H
+            dx, dy = random.uniform(-0.3, 0.3), -1
+        elif side == "left":
+            sx, sy = 0, random.randint(0, H)
+            dx, dy = 1, random.uniform(-0.3, 0.3)
+        else:
+            sx, sy = W, random.randint(0, H)
+            dx, dy = -1, random.uniform(-0.3, 0.3)
+
+        for i in range(random.randint(5, 20)):
+            x = int(sx + dx * i * 40)
+            y = int(sy + dy * i * 40)
+            # Stop at firewall radius
+            dist = math.sqrt((x - cx)**2 + (y - cy)**2)
+            if dist < 450:
+                # Blocked! Show impact
+                draw.text((x, y), "✕", fill=blend(BG, red, 0.7), font=font_md)
+                break
+            if 0 <= x < W and 0 <= y < H:
+                t = i / 20
+                a = max(0.1, 0.5 * (1 - t))
+                draw.text((x, y), random.choice("01✕⚠"),
+                          fill=blend(BG, red_dim, a), font=font_sm)
+
+    # Firewall — concentric hexagonal/circular shield rings
+    for ring in range(3):
+        r = 400 + ring * 80
+        segments = 60
+        for i in range(segments):
+            angle = 2 * math.pi * i / segments
+            x = cx + int(r * math.cos(angle))
+            y = cy + int(r * math.sin(angle))
+            if 0 <= x < W and 0 <= y < H:
+                a = 0.6 - ring * 0.15
+                char = random.choice("█▓▒░" if ring == 0 else MATRIX_CHARS[:10])
+                draw.text((x, y), char, fill=blend(BG, green, a), font=font_md)
+
+    # Shield hex pattern between rings
+    for angle_i in range(0, 360, 6):
+        angle = math.radians(angle_i)
+        for r in range(400, 560, 18):
+            x = cx + int(r * math.cos(angle))
+            y = cy + int(r * math.sin(angle))
+            if 0 <= x < W and 0 <= y < H:
+                ring_t = (r - 400) / 160
+                a = random.uniform(0.15, 0.35) * (1 - ring_t * 0.3)
+                draw.text((x, y), random.choice(chars),
+                          fill=blend(BG, green, a), font=font_sm)
+
+    # Status overlay text — firewall logs
+    log_font = get_font(14)
+    logs = [
+        ("[FIREWALL] ACTIVE — Shield of Faith: ENGAGED", green, 0.5),
+        ("[BLOCKED] 666 malicious packets dropped", red_dim, 0.4),
+        ("[SHIELD]  Fiery darts extinguished: 1,000,000+", amber, 0.4),
+        ("[STATUS]  Soul integrity: 100%", green, 0.5),
+        ("[PRAYER]  Real-time protection: ALWAYS ON", bright, 0.45),
+    ]
+    for i, (text, color, alpha) in enumerate(logs):
+        draw.text((80, 80 + i * 26), text, fill=blend(BG, color, alpha), font=log_font)
+
+    # Cross in the center (protected)
+    cross_h = 300
+    cross_w = 180
+    beam = 40
+    cross_cy = cy
+    for y in range(cross_cy - cross_h // 2, cross_cy + cross_h // 2, 14):
+        for x in range(cx - cross_w // 2, cx + cross_w // 2, 14):
+            in_vert = abs(x - cx) < beam // 2
+            in_horiz = abs(y - (cross_cy - cross_h // 6)) < beam // 2 and abs(x - cx) < cross_w // 2
+            if in_vert or in_horiz:
+                a = random.uniform(0.60, 0.90)
+                draw.text((x, y), random.choice("✝†"), fill=blend(BG, bright, a), font=font_lg)
+
+    # Glow behind cross
+    for r in range(350, 0, -4):
+        a = 0.025 * (1 - r / 350) ** 2
+        if a > 0.001:
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=blend(BG, green, a))
+
+    # Verse
+    verse = '"He shall cover thee with His feathers, and under His wings shalt thou trust;'
+    verse2 = 'His truth shall be thy shield and buckler."'
+    tw = draw.textlength(verse, font=font_verse)
+    tw2 = draw.textlength(verse2, font=font_verse)
+    draw.text(((W - tw) // 2, H - 160), verse, fill=blend(BG, bright, 0.75), font=font_verse)
+    draw.text(((W - tw2) // 2, H - 120), verse2, fill=blend(BG, bright, 0.75), font=font_verse)
+    ref = "PSALM 91:4"
+    tw = draw.textlength(ref, font=font_md)
+    draw.text(((W - tw) // 2, H - 70), ref, fill=blend(BG, green, 0.55), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.3))
+    img.save("backgrounds/25-firewall-faith.png", "PNG", optimize=True)
+    print("Saved backgrounds/25-firewall-faith.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 26. The Hacker's Prayer — Lord's Prayer as code (Matt 6:9)
+# ─────────────────────────────────────────────────────────────
+def wallpaper_hackers_prayer():
+    """The Lord's Prayer written as hacker pseudocode — Matt 6:9-13."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(609)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(22)
+    font_code = get_font(26)
+    font_comment = get_font(20)
+    font_verse = get_font(32)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    dim = (0, 130, 40)
+    keyword = (0, 255, 120)
+    string_c = (150, 255, 180)
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(4000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.015, 0.035)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Code block — The Lord's Prayer as executable code
+    code_lines = [
+        ("#!/usr/bin/env prayer", dim, 0.40, font_comment),
+        ("# The Lord's Prayer — Executable Faith", dim, 0.40, font_comment),
+        ("# Matthew 6:9-13 | Version: Eternal", dim, 0.40, font_comment),
+        ("", None, 0, None),
+        ("import faith", keyword, 0.75, font_code),
+        ("from heaven import Father", keyword, 0.75, font_code),
+        ("from grace import forgiveness, deliverance", keyword, 0.75, font_code),
+        ("", None, 0, None),
+        ("def pray():", green, 0.85, font_code),
+        ('    Father.connect("heaven")', string_c, 0.80, font_code),
+        ('    Father.name.hallow()', green, 0.80, font_code),
+        ("", None, 0, None),
+        ('    # Thy kingdom come', dim, 0.40, font_comment),
+        ('    kingdom.deploy(target="earth")', green, 0.80, font_code),
+        ('    will.execute(on="earth", as_in="heaven")', green, 0.80, font_code),
+        ("", None, 0, None),
+        ('    # Daily provision', dim, 0.40, font_comment),
+        ('    bread = Father.provide(freq="daily")', string_c, 0.80, font_code),
+        ("", None, 0, None),
+        ('    # Forgiveness protocol', dim, 0.40, font_comment),
+        ('    debts = forgiveness.clear_all()', green, 0.80, font_code),
+        ('    self.forgive(debtors=True)  # required', string_c, 0.80, font_code),
+        ("", None, 0, None),
+        ('    # Security & deliverance', dim, 0.40, font_comment),
+        ('    temptation.block(mode="firewall")', green, 0.80, font_code),
+        ('    deliverance.from_evil()', bright, 0.90, font_code),
+        ("", None, 0, None),
+        ('    # For Thine is the kingdom,', dim, 0.40, font_comment),
+        ('    # the power, and the glory, forever.', dim, 0.40, font_comment),
+        ('    return "Amen"', bright, 0.92, font_code),
+        ("", None, 0, None),
+        ("if __name__ == '__main__':", green, 0.75, font_code),
+        ("    pray()  # Execute daily", keyword, 0.80, font_code),
+    ]
+
+    # Center the code block
+    code_x = 600
+    code_y = 200
+    line_h = 36
+
+    # Faint editor line numbers
+    line_num_font = get_font(16)
+    for i, (text, color, alpha, font) in enumerate(code_lines):
+        y = code_y + i * line_h
+        # Line number
+        draw.text((code_x - 60, y + 3), f"{i+1:2d}", fill=blend(BG, dim, 0.3), font=line_num_font)
+        if text and color and font:
+            draw.text((code_x, y), text, fill=blend(BG, color, alpha), font=font)
+
+    # Vertical line (gutter)
+    draw.line([(code_x - 25, code_y - 10), (code_x - 25, code_y + len(code_lines) * line_h)],
+              fill=blend(BG, green, 0.15), width=1)
+
+    # Matrix rain on sides
+    for col in range(0, W, 40):
+        if code_x - 100 < col < code_x + 1200:
+            continue
+        stream_len = random.randint(8, 18)
+        start_y = random.randint(-100, H)
+        for i in range(stream_len):
+            y = start_y + i * 34
+            if y < 0 or y > H:
+                continue
+            t = i / stream_len
+            color = blend(BG, green, max(0.05, 0.3 * (1 - t)))
+            draw.text((col, y), random.choice(MATRIX_CHARS), fill=color, font=font_sm)
+
+    # Verse at bottom
+    verse = '"After this manner therefore pray ye..."'
+    tw = draw.textlength(verse, font=font_verse)
+    draw.text(((W - tw) // 2, H - 120), verse, fill=blend(BG, bright, 0.70), font=font_verse)
+    ref = "MATTHEW 6:9"
+    tw = draw.textlength(ref, font=font_md)
+    draw.text(((W - tw) // 2, H - 75), ref, fill=blend(BG, green, 0.55), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.2))
+    img.save("backgrounds/26-hackers-prayer.png", "PNG", optimize=True)
+    print("Saved backgrounds/26-hackers-prayer.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 27. Digital Resurrection — Figure rising from data (1 Cor 15:55)
+# ─────────────────────────────────────────────────────────────
+def wallpaper_digital_resurrection():
+    """Figure rising/reassembling from fragmented glitch data — 1 Cor 15:55."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(1555)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(22)
+    font_lg = get_font(30)
+    font_verse = get_font(34)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    gold = (200, 255, 150)
+    chars = MATRIX_CHARS + list("01✝†")
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(4000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.04)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Broken / glitched data fragments at bottom (death/grave)
+    for y in range(cy + 200, H - 100, 10):
+        for x in range(cx - 500, cx + 500, 14):
+            depth = (y - (cy + 200)) / (H - 100 - cy - 200)
+            # More fragmented/chaotic at bottom
+            if random.random() < 0.3 + depth * 0.4:
+                offset_x = random.randint(-20, 20) * depth
+                a = random.uniform(0.10, 0.30) * (1 - depth * 0.3)
+                draw.text((int(x + offset_x), y), random.choice(MATRIX_CHARS),
+                          fill=blend(BG, green, a), font=font_sm)
+
+    # Rising figure — assembling from fragments
+    def in_rising_figure(px, py):
+        nx = (px - cx) / 300
+        ny = (py - cy) / 500
+
+        # Head
+        if nx**2 + (ny + 0.55)**2 < 0.025:
+            return "head"
+        # Neck
+        if abs(nx) < 0.04 and -0.45 < ny < -0.38:
+            return "body"
+        # Torso
+        if -0.38 < ny < 0.05 and abs(nx) < 0.15:
+            return "body"
+        # Arms raised upward (victory pose)
+        for sign in [-1, 1]:
+            # Arm goes from shoulder outward and up
+            if -0.55 < ny < -0.25:
+                arm_x = sign * (0.15 + 0.35 * ((-ny - 0.25) / 0.3))
+                if abs(nx - arm_x) < 0.05:
+                    return "arms"
+        # Robe / lower body
+        if 0.05 < ny < 0.65:
+            robe_t = (ny - 0.05) / 0.6
+            robe_w = 0.15 + 0.15 * robe_t ** 0.6
+            if abs(nx) < robe_w:
+                return "robe"
+        return None
+
+    # Fill figure — intact at top, fragmenting toward bottom
+    step = 12
+    for y in range(cy - 350, cy + 400, step):
+        for x in range(cx - 350, cx + 350, step):
+            part = in_rising_figure(x, y)
+            if part:
+                ny = (y - cy) / 500
+                # Intact at top, fragmenting at bottom
+                fragment_chance = max(0, (ny + 0.2) * 0.8)
+
+                if random.random() < fragment_chance:
+                    # Fragmented — offset and dimmer
+                    offset = random.randint(-15, 15)
+                    a = random.uniform(0.15, 0.35)
+                    draw.text((x + offset, y + random.randint(-5, 5)),
+                              random.choice(chars), fill=blend(BG, green, a), font=font_sm)
+                else:
+                    # Intact
+                    if part == "head":
+                        a = random.uniform(0.80, 0.95)
+                        draw.text((x, y), random.choice(chars),
+                                  fill=blend(BG, bright, a), font=font_lg)
+                    elif part == "arms":
+                        a = random.uniform(0.55, 0.78)
+                        draw.text((x, y), random.choice(chars),
+                                  fill=blend(BG, green, a), font=font_md)
+                    elif part == "body":
+                        a = random.uniform(0.50, 0.75)
+                        draw.text((x, y), random.choice(chars),
+                                  fill=blend(BG, green, a), font=font_md)
+                    elif part == "robe":
+                        a = random.uniform(0.30, 0.55)
+                        draw.text((x, y), random.choice(chars),
+                                  fill=blend(BG, green, a), font=font_sm)
+
+    # Data particles rising upward from the figure (resurrection energy)
+    for _ in range(500):
+        x = cx + random.randint(-250, 250)
+        y = random.randint(cy - 500, cy + 100)
+        # Rising upward — brighter at top
+        t = (cy + 100 - y) / 600
+        a = random.uniform(0.1, 0.5) * t
+        size_pick = random.choice([font_sm, font_md])
+        draw.text((x, y), random.choice(chars), fill=blend(BG, gold, a), font=size_pick)
+
+    # Bright glow behind head/upper body
+    for r in range(500, 0, -4):
+        a = 0.03 * (1 - r / 500) ** 2
+        if a > 0.001:
+            draw.ellipse([cx - r, (cy - 280) - r, cx + r, (cy - 280) + r],
+                         outline=blend(BG, gold, a))
+
+    # Glitch lines (horizontal scan artifacts)
+    for _ in range(20):
+        gy = random.randint(cy, cy + 350)
+        gx = random.randint(cx - 200, cx + 100)
+        gw = random.randint(50, 200)
+        a = random.uniform(0.15, 0.35)
+        draw.line([(gx, gy), (gx + gw, gy)], fill=blend(BG, green, a), width=1)
+
+    # Verse
+    verse = '"O death, where is thy sting? O grave, where is thy victory?"'
+    tw = draw.textlength(verse, font=font_verse)
+    draw.text(((W - tw) // 2, H - 130), verse, fill=blend(BG, bright, 0.78), font=font_verse)
+    ref = "1 CORINTHIANS 15:55"
+    tw = draw.textlength(ref, font=font_md)
+    draw.text(((W - tw) // 2, H - 80), ref, fill=blend(BG, green, 0.55), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.3))
+    img.save("backgrounds/27-digital-resurrection.png", "PNG", optimize=True)
+    print("Saved backgrounds/27-digital-resurrection.png")
+
+
 if __name__ == "__main__":
     wallpaper_matrix_rain()
     wallpaper_circuit()
@@ -2373,6 +3031,12 @@ if __name__ == "__main__":
     wallpaper_lion_of_judah()
     wallpaper_narrow_gate()
     wallpaper_sword_of_spirit()
-    print("Done! Generated 22 wallpapers.")
+    wallpaper_digital_genesis()
+    wallpaper_matrix_baptism()
+    wallpaper_firewall_faith()
+    wallpaper_hackers_prayer()
+    wallpaper_digital_resurrection()
+    print("Done! Generated 27 wallpapers.")
+
 
 
