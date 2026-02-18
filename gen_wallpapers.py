@@ -707,6 +707,658 @@ def wallpaper_skull():
     print("Saved backgrounds/7-skull.png")
 
 
+# ─────────────────────────────────────────────────────────────
+# 8. Glowing Cross — monumental cross made of Matrix characters
+# ─────────────────────────────────────────────────────────────
+def wallpaper_cross():
+    """A towering glowing cross made of cascading Matrix characters."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(777)
+
+    font_bg = get_font(10)
+    font_sm = get_font(16)
+    font_md = get_font(22)
+    font_lg = get_font(30)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    chars = MATRIX_CHARS + list("✝✟†‡")
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(8000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.06)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Cross dimensions
+    cross_h = 1400   # total height
+    cross_w = 800    # crossbeam width
+    beam_thick = 140  # thickness of beams
+    crossbeam_y = cy - 200  # where horizontal beam sits
+
+    def in_cross(px, py):
+        """Check if point is inside the cross shape."""
+        # Vertical beam
+        if abs(px - cx) < beam_thick // 2:
+            if cy - cross_h // 2 < py < cy + cross_h // 2:
+                return True
+        # Horizontal crossbeam
+        if abs(py - crossbeam_y) < beam_thick // 2:
+            if abs(px - cx) < cross_w // 2:
+                return True
+        return False
+
+    def cross_dist(px, py):
+        """Distance to nearest cross edge for glow."""
+        dists = []
+        # Vertical beam edges
+        if cy - cross_h // 2 < py < cy + cross_h // 2:
+            dists.append(abs(abs(px - cx) - beam_thick // 2))
+        # Horizontal beam edges
+        if abs(px - cx) < cross_w // 2:
+            dists.append(abs(abs(py - crossbeam_y) - beam_thick // 2))
+        # Ends
+        if abs(px - cx) < beam_thick // 2:
+            dists.append(abs(py - (cy - cross_h // 2)))
+            dists.append(abs(py - (cy + cross_h // 2)))
+        if abs(py - crossbeam_y) < beam_thick // 2:
+            dists.append(abs(px - (cx - cross_w // 2)))
+            dists.append(abs(px - (cx + cross_w // 2)))
+        return min(dists) if dists else 999
+
+    # Fill cross with dense characters
+    step = 16
+    for y in range(cy - cross_h // 2 - 10, cy + cross_h // 2 + 10, step):
+        for x in range(cx - cross_w // 2 - 10, cx + cross_w // 2 + 10, step):
+            if in_cross(x, y):
+                char = random.choice(chars)
+                # Edge glow
+                ed = cross_dist(x, y)
+                if ed < 20:
+                    a = random.uniform(0.75, 0.95)
+                    c = bright
+                    f = font_lg
+                elif ed < 40:
+                    a = random.uniform(0.55, 0.75)
+                    c = green
+                    f = font_md
+                else:
+                    a = random.uniform(0.30, 0.55)
+                    c = green
+                    f = font_sm
+                draw.text((x, y), char, fill=blend(BG, c, a), font=f)
+
+    # Matrix rain falling through the cross
+    for col in range(cx - cross_w // 2, cx + cross_w // 2, 34):
+        stream_len = random.randint(8, 25)
+        start_y = random.randint(cy - cross_h // 2, cy + 200)
+        for i in range(stream_len):
+            y = start_y + i * 36
+            x = col + random.randint(-5, 5)
+            if not in_cross(x, y):
+                continue
+            t = i / stream_len
+            if i == 0:
+                color = blend(BG, bright, 0.90)
+            else:
+                color = blend(BG, green, max(0.1, 0.70 * (1 - t)))
+            draw.text((x, y), random.choice(MATRIX_CHARS), fill=color, font=font_md)
+
+    # Radiant glow behind cross
+    for r in range(800, 0, -4):
+        a = 0.03 * (1 - r / 800) ** 2
+        if a > 0.001:
+            draw.ellipse([cx - r, cy - 100 - r, cx + r, cy - 100 + r],
+                         outline=blend(BG, green, a))
+
+    # Light rays emanating from cross center
+    for angle_deg in range(0, 360, 15):
+        angle = math.radians(angle_deg)
+        for r in range(50, 700, 3):
+            x = cx + int(r * math.cos(angle))
+            y = crossbeam_y + int(r * math.sin(angle))
+            if 0 <= x < W and 0 <= y < H:
+                a = 0.06 * (1 - r / 700) ** 1.5
+                if a > 0.003:
+                    draw.point((x, y), fill=blend(BG, green, a))
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/8-cross.png", "PNG", optimize=True)
+    print("Saved backgrounds/8-cross.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 9. Jesus Silhouette — Christ figure with outstretched arms
+# ─────────────────────────────────────────────────────────────
+def wallpaper_jesus():
+    """Silhouette of Jesus with outstretched arms, composed of Matrix code."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(333)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(20)
+    font_lg = get_font(28)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    gold = (200, 255, 150)
+    chars = MATRIX_CHARS + list("01✝")
+
+    cx, cy = W // 2, H // 2 + 50
+
+    # Background scatter
+    for _ in range(6000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.05)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    def in_figure(px, py):
+        """Jesus silhouette: head + body + outstretched arms + robe."""
+        nx = (px - cx) / 500
+        ny = (py - cy) / 600
+
+        # Head (circle)
+        head_cy = -0.75
+        if nx ** 2 + (ny - head_cy) ** 2 < 0.025:
+            return True
+
+        # Halo (ring around head, slightly larger)
+        head_dist = nx ** 2 + (ny - head_cy) ** 2
+        if 0.03 < head_dist < 0.05:
+            return True
+
+        # Neck
+        if abs(nx) < 0.04 and -0.62 < ny < -0.55:
+            return True
+
+        # Torso (tapers slightly)
+        if -0.55 < ny < 0.1:
+            torso_w = 0.12 + 0.03 * ((ny + 0.55) / 0.65)
+            if abs(nx) < torso_w:
+                return True
+
+        # Arms outstretched (slight downward angle)
+        arm_y_center = -0.40
+        arm_droop = 0.15  # how much arms droop at edges
+        if 0.12 < abs(nx) < 0.85:
+            arm_y = arm_y_center + arm_droop * ((abs(nx) - 0.12) / 0.73) ** 1.3
+            if abs(ny - arm_y) < 0.04:
+                return True
+
+        # Hands (slightly wider at arm ends)
+        for sign in [-1, 1]:
+            hand_cx = sign * 0.85
+            hand_cy = arm_y_center + arm_droop
+            if (nx - hand_cx) ** 2 + (ny - hand_cy) ** 2 < 0.003:
+                return True
+
+        # Robe (flowing down, wider at bottom)
+        if 0.1 < ny < 0.85:
+            robe_t = (ny - 0.1) / 0.75
+            robe_w = 0.12 + 0.25 * robe_t ** 0.7
+            if abs(nx) < robe_w:
+                return True
+
+        return False
+
+    # Fill figure with characters
+    step = 14
+    for y in range(cy - 550, cy + 550, step):
+        for x in range(cx - 500, cx + 500, step):
+            if in_figure(x, y):
+                char = random.choice(chars)
+                # Brightness based on proximity to center
+                dist = math.sqrt((x - cx) ** 2 + (y - cy + 100) ** 2) / 500
+                if dist < 0.2:
+                    a = random.uniform(0.70, 0.90)
+                    c = bright
+                    f = font_lg
+                elif dist < 0.5:
+                    a = random.uniform(0.45, 0.65)
+                    c = green
+                    f = font_md
+                else:
+                    a = random.uniform(0.25, 0.45)
+                    c = green
+                    f = font_sm
+
+                draw.text((x, y), char, fill=blend(BG, c, a), font=f)
+
+    # Halo glow behind head
+    halo_cy = cy - 450
+    for r in range(200, 0, -2):
+        a = 0.06 * (1 - r / 200) ** 1.5
+        if a > 0.002:
+            draw.ellipse([cx - r, halo_cy - r, cx + r, halo_cy + r],
+                         outline=blend(BG, gold, a))
+
+    # Light radiating from figure
+    for angle_deg in range(0, 360, 8):
+        angle = math.radians(angle_deg)
+        for r in range(100, 900, 3):
+            x = cx + int(r * math.cos(angle))
+            y = halo_cy + int(r * math.sin(angle))
+            if 0 <= x < W and 0 <= y < H:
+                a = 0.04 * (1 - r / 900) ** 2
+                if a > 0.002:
+                    draw.point((x, y), fill=blend(BG, gold, a))
+
+    # Matrix rain flowing around the figure
+    for col in range(0, W, 40):
+        if abs(col - cx) < 250:
+            continue  # skip over the figure
+        stream_len = random.randint(8, 20)
+        start_y = random.randint(-200, H)
+        for i in range(stream_len):
+            y = start_y + i * 34
+            if y < 0 or y > H:
+                continue
+            t = i / stream_len
+            color = blend(BG, green, max(0.05, 0.30 * (1 - t)))
+            draw.text((col, y), random.choice(MATRIX_CHARS), fill=color, font=font_sm)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/9-jesus.png", "PNG", optimize=True)
+    print("Saved backgrounds/9-jesus.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 10. Crown of Thorns — circular crown with Matrix code
+# ─────────────────────────────────────────────────────────────
+def wallpaper_crown_of_thorns():
+    """Crown of thorns ring made of Matrix code with thorny protrusions."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(430)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(20)
+    font_lg = get_font(26)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    red_green = (100, 200, 60)
+    chars = MATRIX_CHARS + list("01✝†‡×")
+
+    cx, cy = W // 2, H // 2
+
+    # Background subtle rain
+    for _ in range(6000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.05)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Crown parameters
+    outer_r = 450
+    inner_r = 350
+    crown_thickness = outer_r - inner_r
+
+    # Thorns — spiky protrusions
+    num_thorns = 40
+    thorn_angles = [i * 2 * math.pi / num_thorns + random.uniform(-0.1, 0.1) for i in range(num_thorns)]
+    thorn_lengths = [random.randint(60, 150) for _ in range(num_thorns)]
+
+    def in_crown(px, py):
+        """Check if point is inside the crown (torus + thorns)."""
+        dx = px - cx
+        dy = (py - cy) * 1.4  # flatten to make it more oval / perspective
+        dist = math.sqrt(dx ** 2 + dy ** 2)
+
+        # Main ring
+        if inner_r < dist < outer_r:
+            return "ring"
+
+        # Thorns
+        angle = math.atan2(dy, dx)
+        for i, ta in enumerate(thorn_angles):
+            angle_diff = abs(((angle - ta + math.pi) % (2 * math.pi)) - math.pi)
+            if angle_diff < 0.06:
+                thorn_end = outer_r + thorn_lengths[i]
+                if outer_r - 10 < dist < thorn_end:
+                    # Taper the thorn
+                    thorn_t = (dist - outer_r) / thorn_lengths[i]
+                    if angle_diff < 0.06 * (1 - thorn_t * 0.8):
+                        return "thorn"
+
+        return None
+
+    # Fill crown with characters
+    step = 14
+    for y in range(cy - 500, cy + 500, step):
+        for x in range(cx - 650, cx + 650, step):
+            part = in_crown(x, y)
+            if part:
+                char = random.choice(chars)
+                dx = x - cx
+                dy = (y - cy) * 1.4
+                dist = math.sqrt(dx ** 2 + dy ** 2)
+
+                if part == "thorn":
+                    thorn_t = max(0, (dist - outer_r) / 150)
+                    a = random.uniform(0.50, 0.80) * (1 - thorn_t * 0.5)
+                    c = bright
+                    f = font_md
+                else:
+                    # Ring: brighter at outer and inner edges
+                    edge_dist = min(abs(dist - inner_r), abs(dist - outer_r))
+                    if edge_dist < 25:
+                        a = random.uniform(0.65, 0.90)
+                        c = bright
+                        f = font_lg
+                    else:
+                        a = random.uniform(0.35, 0.55)
+                        c = green
+                        f = font_md
+
+                draw.text((x, y), char, fill=blend(BG, c, a), font=f)
+
+    # Intertwined braids — sinusoidal paths around the ring
+    for braid in range(3):
+        phase = braid * 2 * math.pi / 3
+        for t in range(0, 3600, 2):
+            angle = math.radians(t / 10)
+            wave = 30 * math.sin(angle * 8 + phase)
+            r = (inner_r + outer_r) / 2 + wave
+            x = cx + int(r * math.cos(angle))
+            y = cy + int(r * math.sin(angle) / 1.4)
+            if 0 <= x < W and 0 <= y < H:
+                a = 0.5 + 0.3 * math.sin(angle * 3 + phase)
+                draw.text((x, y), random.choice(MATRIX_CHARS),
+                          fill=blend(BG, bright, max(0.2, a * 0.6)), font=font_sm)
+
+    # Central glow
+    for r in range(350, 0, -3):
+        a = 0.02 * (1 - r / 350) ** 2
+        if a > 0.001:
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r],
+                         outline=blend(BG, green, a))
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/10-crown-of-thorns.png", "PNG", optimize=True)
+    print("Saved backgrounds/10-crown-of-thorns.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 11. Ichthys (Fish) — Christian fish symbol with data streams
+# ─────────────────────────────────────────────────────────────
+def wallpaper_ichthys():
+    """Christian fish (Ichthys) symbol composed of streaming Matrix code."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(153)  # John 21:11 — the miraculous catch
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(20)
+    font_lg = get_font(28)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    chars = MATRIX_CHARS + list("IXΘYΣ01")  # IXΘYΣ = ICHTHYS
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(6000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.05)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Fish shape using parametric arcs
+    fish_scale = 500
+    fish_tail_x = cx - 550  # leftmost point (tail)
+    fish_mouth_x = cx + 550  # rightmost point (mouth meets)
+
+    def in_fish(px, py):
+        """Ichthys fish: two arcs meeting at a point on the right."""
+        nx = (px - cx) / fish_scale
+        ny = (py - cy) / fish_scale
+
+        # Upper arc: starts at (-1.1, 0), curves up, ends at (1.1, 0)
+        # Lower arc: mirror image
+        # Using parametric: the fish is bounded by two circular arcs
+
+        # Simplified: elliptical arcs
+        # Upper body line
+        if -1.1 <= nx <= 1.1:
+            # Fish body height varies: max at center, zero at both ends
+            t = (nx + 1.1) / 2.2  # 0 at tail, 1 at mouth
+            # Asymmetric: fatter toward front
+            body_h = 0.45 * math.sin(t * math.pi) ** 0.7
+            if abs(ny) < body_h:
+                return True
+
+            # Outline (thick border)
+            if abs(abs(ny) - body_h) < 0.04:
+                return True
+
+        # Tail: V-shape extending left from the body
+        if -1.6 <= nx <= -1.0:
+            tail_t = (nx + 1.6) / 0.6  # 0 at far left, 1 at body junction
+            tail_spread = 0.35 * (1 - tail_t)
+            # Two lines of the tail
+            for tail_dir in [-1, 1]:
+                target_y = tail_dir * tail_spread
+                if abs(ny - target_y) < 0.035:
+                    return True
+
+        return False
+
+    def fish_outline_dist(px, py):
+        """Distance to nearest fish outline."""
+        nx = (px - cx) / fish_scale
+        ny = (py - cy) / fish_scale
+        if -1.1 <= nx <= 1.1:
+            t = (nx + 1.1) / 2.2
+            body_h = 0.45 * math.sin(t * math.pi) ** 0.7
+            return abs(abs(ny) - body_h) * fish_scale
+        return 999
+
+    # Fill fish with characters
+    step = 14
+    for y in range(cy - 350, cy + 350, step):
+        for x in range(cx - 850, cx + 650, step):
+            if in_fish(x, y):
+                char = random.choice(chars)
+                od = fish_outline_dist(x, y)
+                if od < 25:
+                    a = random.uniform(0.70, 0.92)
+                    c = bright
+                    f = font_lg
+                elif od < 60:
+                    a = random.uniform(0.45, 0.65)
+                    c = green
+                    f = font_md
+                else:
+                    a = random.uniform(0.25, 0.45)
+                    c = green
+                    f = font_sm
+                draw.text((x, y), char, fill=blend(BG, c, a), font=f)
+
+    # Eye
+    eye_x = cx + 320
+    eye_y = cy - 40
+    for r in range(40, 0, -2):
+        a = 0.7 * (1 - r / 40)
+        draw.ellipse([eye_x - r, eye_y - r, eye_x + r, eye_y + r],
+                     fill=blend(BG, bright, a))
+
+    # "IXΘYΣ" text inside the fish body
+    ichthys_font = get_font(50)
+    text = "ΙΧΘΥΣ"
+    ichthys_color = blend(BG, bright, 0.7)
+    draw.text((cx - 120, cy - 25), text, fill=ichthys_color, font=ichthys_font)
+
+    # Data streams flowing through the fish
+    for col in range(cx - 500, cx + 500, 50):
+        stream_len = random.randint(5, 12)
+        start_y = random.randint(cy - 200, cy - 50)
+        for i in range(stream_len):
+            y = start_y + i * 28
+            if not in_fish(col, y):
+                continue
+            t = i / stream_len
+            color = blend(BG, green, max(0.1, 0.50 * (1 - t)))
+            draw.text((col, y), random.choice(MATRIX_CHARS), fill=color, font=font_sm)
+
+    # Radial glow
+    for r in range(600, 0, -4):
+        a = 0.02 * (1 - r / 600) ** 2
+        if a > 0.001:
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r],
+                         outline=blend(BG, green, a))
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/11-ichthys.png", "PNG", optimize=True)
+    print("Saved backgrounds/11-ichthys.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 12. Praying Hands — hands in prayer with Matrix code
+# ─────────────────────────────────────────────────────────────
+def wallpaper_praying_hands():
+    """Praying hands silhouette composed of flowing Matrix characters."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(316)  # John 3:16
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(20)
+    font_lg = get_font(26)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    gold = (200, 255, 150)
+    chars = MATRIX_CHARS + list("01✝†")
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(6000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.05)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    def in_praying_hands(px, py):
+        """Praying hands: two hands pressed together, fingers pointing up."""
+        nx = (px - cx) / 400
+        ny = (py - cy) / 550
+
+        # Fingers (top section, pointing up, pressed together)
+        if -0.75 < ny < -0.15:
+            finger_t = (ny + 0.75) / 0.6  # 0 at top, 1 at base of fingers
+            # Fingers taper at top
+            finger_w = 0.18 + 0.12 * finger_t
+            # Gap in the middle (where hands meet) — very thin
+            if abs(nx) < 0.015:
+                return False
+            if abs(nx) < finger_w:
+                return True
+
+        # Palm area (wider, where hands press together)
+        if -0.15 < ny < 0.35:
+            palm_t = (ny + 0.15) / 0.5
+            palm_w = 0.30 + 0.08 * palm_t
+            # Slight indentation at center where hands meet
+            if abs(nx) < 0.01:
+                return False
+            if abs(nx) < palm_w:
+                return True
+
+        # Wrists (narrowing)
+        if 0.35 < ny < 0.65:
+            wrist_t = (ny - 0.35) / 0.3
+            wrist_w = 0.38 - 0.10 * wrist_t
+            # Split into two wrists
+            for sign in [-1, 1]:
+                wrist_cx = sign * 0.12 * (1 + wrist_t * 0.5)
+                if abs(nx - wrist_cx) < wrist_w * 0.4:
+                    return True
+
+        # Forearms (separating, angled outward)
+        if 0.65 < ny < 1.0:
+            arm_t = (ny - 0.65) / 0.35
+            for sign in [-1, 1]:
+                arm_cx = sign * (0.20 + 0.25 * arm_t)
+                arm_w = 0.12 + 0.03 * arm_t
+                if abs(nx - arm_cx) < arm_w:
+                    return True
+
+        return False
+
+    # Fill with characters
+    step = 14
+    for y in range(cy - 450, cy + 580, step):
+        for x in range(cx - 350, cx + 350, step):
+            if in_praying_hands(x, y):
+                char = random.choice(chars)
+                dist = math.sqrt((x - cx) ** 2 + (y - cy + 50) ** 2) / 400
+
+                if dist < 0.3:
+                    a = random.uniform(0.65, 0.88)
+                    c = bright
+                    f = font_lg
+                elif dist < 0.6:
+                    a = random.uniform(0.45, 0.65)
+                    c = green
+                    f = font_md
+                else:
+                    a = random.uniform(0.25, 0.45)
+                    c = green
+                    f = font_sm
+                draw.text((x, y), char, fill=blend(BG, c, a), font=f)
+
+    # Light emanating upward from fingertips
+    for angle_deg in range(-60, 61, 5):
+        angle = math.radians(angle_deg - 90)  # centered upward
+        for r in range(50, 800, 3):
+            x = cx + int(r * math.cos(angle))
+            y = (cy - 420) + int(r * math.sin(angle))
+            if 0 <= x < W and 0 <= y < H:
+                a = 0.05 * (1 - r / 800) ** 2
+                if a > 0.002:
+                    draw.point((x, y), fill=blend(BG, gold, a))
+
+    # Small cross above the hands
+    cross_cy = cy - 520
+    cross_h = 100
+    cross_w = 60
+    beam_t = 14
+    for y in range(cross_cy - cross_h // 2, cross_cy + cross_h // 2, 12):
+        for x in range(cx - cross_w // 2, cx + cross_w // 2, 12):
+            # Vertical
+            is_vert = abs(x - cx) < beam_t
+            # Horizontal
+            is_horiz = abs(y - (cross_cy - cross_h // 6)) < beam_t and abs(x - cx) < cross_w // 2
+            if is_vert or is_horiz:
+                a = random.uniform(0.60, 0.85)
+                draw.text((x, y), random.choice("✝†"),
+                          fill=blend(BG, bright, a), font=font_lg)
+
+    # Radial glow
+    for r in range(500, 0, -3):
+        a = 0.025 * (1 - r / 500) ** 2
+        if a > 0.001:
+            draw.ellipse([cx - r, cy - 100 - r, cx + r, cy - 100 + r],
+                         outline=blend(BG, green, a))
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/12-praying-hands.png", "PNG", optimize=True)
+    print("Saved backgrounds/12-praying-hands.png")
+
+
 if __name__ == "__main__":
     wallpaper_matrix_rain()
     wallpaper_circuit()
@@ -715,4 +1367,9 @@ if __name__ == "__main__":
     wallpaper_cyber_grid()
     wallpaper_terminal_scroll()
     wallpaper_skull()
-    print("Done! Generated 7 wallpapers.")
+    wallpaper_cross()
+    wallpaper_jesus()
+    wallpaper_crown_of_thorns()
+    wallpaper_ichthys()
+    wallpaper_praying_hands()
+    print("Done! Generated 12 wallpapers.")
