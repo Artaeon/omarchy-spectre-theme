@@ -1,15 +1,15 @@
 return {
   {
-    "sainnhe/everforest",
+    "folke/tokyonight.nvim",
     priority = 1000,
     init = function()
-      vim.o.background = "light"
+      vim.o.background = "dark"
     end,
   },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "everforest",
+      colorscheme = "tokyonight-night",
     },
   },
 }

@@ -3,51 +3,132 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spectre — Omarchy Light Hacker Theme Preview</title>
+<title>Spectre — Omarchy Dark Matrix Theme Preview</title>
 <style>
   :root {
-    --accent: #00BB33;
-    --cursor: #00BB33;
-    --fg: #0A2010;
-    --bg: #E0F0E0;
-    --sel-fg: #E0F0E0;
-    --sel-bg: #00BB33;
-    --c0: #0A2010;
-    --c1: #992200;
-    --c2: #006622;
-    --c3: #6B8800;
-    --c4: #2D6655;
-    --c5: #556B44;
-    --c6: #007744;
-    --c7: #5A8A5A;
-    --c8: #3A6A3A;
-    --c9: #BB3300;
-    --c10: #00BB33;
-    --c11: #88AA00;
-    --c12: #448877;
-    --c13: #667755;
-    --c14: #009955;
-    --c15: #C5E5C5;
+    --accent: #00FF41;
+    --cursor: #00FF41;
+    --fg: #00CC33;
+    --bg: #0A0A0A;
+    --sel-fg: #0A0A0A;
+    --sel-bg: #00FF41;
+    --c0: #0D0D0D;
+    --c1: #FF0033;
+    --c2: #00FF41;
+    --c3: #CCFF00;
+    --c4: #0088FF;
+    --c5: #9B59B6;
+    --c6: #00FFCC;
+    --c7: #33FF66;
+    --c8: #1A3A1A;
+    --c9: #FF3355;
+    --c10: #00FF41;
+    --c11: #E5FF00;
+    --c12: #33AAFF;
+    --c13: #BB77FF;
+    --c14: #33FFDD;
+    --c15: #BBFFBB;
+    --glow: 0 0 8px rgba(0,255,65,0.6);
+    --glow-strong: 0 0 12px rgba(0,255,65,0.8), 0 0 30px rgba(0,255,65,0.3);
+    --glow-subtle: 0 0 4px rgba(0,255,65,0.3);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: #1a1a1a;
+    background: #050505;
     font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
     padding: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 32px;
+    color: var(--fg);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── Matrix Rain Background ── */
+  .matrix-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0.12;
+  }
+  .matrix-rain .col {
+    position: absolute;
+    top: -100%;
+    font-size: 14px;
+    line-height: 1.2;
+    color: var(--accent);
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    animation: rain-fall linear infinite;
+    text-shadow: 0 0 8px rgba(0,255,65,0.8);
+  }
+  @keyframes rain-fall {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(calc(100vh + 100%)); }
+  }
+
+  /* ── Scanline Overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+  }
+
+  /* ── CRT vignette ── */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9998;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.6) 100%);
+  }
+
+  /* ── All content above rain ── */
+  h1, .desktop-wrapper, .walker, .palette-section {
+    position: relative;
+    z-index: 10;
   }
 
   h1 {
-    color: #ccc;
+    color: var(--accent);
     font-size: 14px;
     font-weight: 400;
-    letter-spacing: 4px;
+    letter-spacing: 6px;
     text-transform: uppercase;
+    text-shadow: var(--glow-strong);
+    animation: glitch-text 4s ease-in-out infinite;
+  }
+  @keyframes glitch-text {
+    0%, 92%, 100% { opacity: 1; transform: translateX(0); }
+    93% { opacity: 0.8; transform: translateX(-2px); text-shadow: 2px 0 #FF0033, -2px 0 #0088FF; }
+    94% { opacity: 0.9; transform: translateX(1px); text-shadow: -1px 0 #FF0033, 1px 0 #0088FF; }
+    95% { opacity: 1; transform: translateX(0); }
   }
 
   .desktop {
@@ -55,7 +136,7 @@
     background: var(--bg);
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+    box-shadow: 0 0 40px rgba(0,255,65,0.15), 0 20px 80px rgba(0,0,0,0.8);
   }
 
   /* ── Waybar ── */
@@ -68,6 +149,7 @@
     color: var(--c15);
     font-size: 13px;
     border-bottom: 2px solid var(--accent);
+    box-shadow: 0 2px 12px rgba(0,255,65,0.2);
   }
   .waybar-left, .waybar-center, .waybar-right {
     display: flex;
@@ -83,10 +165,11 @@
     background: var(--accent);
     color: var(--c0);
     font-weight: 700;
+    box-shadow: 0 0 8px rgba(0,255,65,0.5);
   }
-  .waybar .ws.inactive { color: var(--c7); }
-  .waybar .accent { color: var(--accent); }
-  .waybar .dim { color: var(--c7); }
+  .waybar .ws.inactive { color: var(--c8); }
+  .waybar .accent { color: var(--accent); text-shadow: var(--glow-subtle); }
+  .waybar .dim { color: var(--c8); }
 
   /* ── Main area ── */
   .main {
@@ -100,7 +183,7 @@
   .terminal {
     background: var(--bg);
     padding: 20px;
-    border-right: 1px solid var(--c15);
+    border-right: 1px solid rgba(0,255,65,0.15);
   }
   .term-header {
     display: flex;
@@ -110,10 +193,11 @@
   }
   .term-dot {
     width: 10px; height: 10px; border-radius: 50%;
+    box-shadow: 0 0 6px currentColor;
   }
   .term-title {
     font-size: 11px;
-    color: var(--c7);
+    color: var(--c8);
     margin-left: 8px;
   }
   .term-line {
@@ -121,19 +205,19 @@
     line-height: 1.7;
     white-space: pre;
   }
-  .prompt { color: var(--accent); font-weight: 700; }
+  .prompt { color: var(--accent); font-weight: 700; text-shadow: var(--glow-subtle); }
   .cmd { color: var(--fg); }
-  .flag { color: var(--c4); }
-  .path { color: var(--c6); }
-  .str { color: var(--c2); }
+  .flag { color: var(--c6); }
+  .path { color: var(--c14); }
+  .str { color: var(--c7); }
   .comment { color: var(--c8); }
-  .err { color: var(--c1); }
+  .err { color: var(--c1); text-shadow: 0 0 6px rgba(255,0,51,0.5); }
   .warn { color: var(--c3); }
-  .success { color: var(--c10); }
+  .success { color: var(--c10); text-shadow: var(--glow-subtle); }
   .info { color: var(--c12); }
-  .purple { color: var(--c5); }
+  .purple { color: var(--c13); }
   .cyan { color: var(--c14); }
-  .dim { color: var(--c7); }
+  .dim { color: var(--c8); }
   .bold { font-weight: 700; }
   .cursor-block {
     display: inline-block;
@@ -142,6 +226,7 @@
     background: var(--cursor);
     vertical-align: text-bottom;
     animation: blink 1s step-end infinite;
+    box-shadow: 0 0 8px rgba(0,255,65,0.6);
   }
   @keyframes blink {
     50% { opacity: 0; }
@@ -158,21 +243,23 @@
     display: flex;
     gap: 0;
     margin-bottom: 12px;
-    border-bottom: 1px solid var(--c15);
+    border-bottom: 1px solid rgba(0,255,65,0.15);
   }
   .tab {
     padding: 6px 16px;
     font-size: 12px;
-    color: var(--c7);
+    color: var(--c8);
     border-bottom: 2px solid transparent;
     cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
   }
   .tab.active {
-    color: var(--fg);
+    color: var(--accent);
     border-bottom-color: var(--accent);
+    text-shadow: var(--glow-subtle);
   }
   .line-numbers {
-    color: var(--c7);
+    color: var(--c8);
     user-select: none;
     text-align: right;
     padding-right: 16px;
@@ -190,18 +277,19 @@
     flex: 1;
   }
   .kw { color: var(--c5); font-weight: 600; }
-  .fn { color: var(--c4); }
-  .type { color: var(--c6); }
+  .fn { color: var(--c6); }
+  .type { color: var(--c4); }
   .num { color: var(--c3); }
   .op { color: var(--c1); }
   .var { color: var(--fg); }
   .dec { color: var(--c12); }
   .attr { color: var(--c11); }
   .highlight-line {
-    background: rgba(0, 170, 68, 0.08);
+    background: rgba(0, 255, 65, 0.06);
     display: block;
     margin: 0 -20px;
     padding: 0 20px;
+    border-left: 2px solid rgba(0,255,65,0.3);
   }
 
   /* ── Selection demo ── */
@@ -215,15 +303,16 @@
     position: absolute;
     top: 70px;
     right: 30px;
-    background: var(--c0);
+    background: rgba(13,13,13,0.95);
     border-left: 3px solid var(--accent);
     padding: 12px 18px;
     border-radius: 6px;
     color: var(--c15);
     font-size: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 20px rgba(0,255,65,0.15), 0 0 1px rgba(0,255,65,0.3);
+    backdrop-filter: blur(8px);
   }
-  .notification .ntitle { color: var(--accent); font-weight: 700; font-size: 11px; margin-bottom: 4px; }
+  .notification .ntitle { color: var(--accent); font-weight: 700; font-size: 11px; margin-bottom: 4px; text-shadow: var(--glow-subtle); }
 
   /* ── Bottom panel ── */
   .bottom-bar {
@@ -231,9 +320,9 @@
     justify-content: space-between;
     padding: 6px 20px;
     background: var(--c0);
-    color: var(--c7);
+    color: var(--c8);
     font-size: 11px;
-    border-top: 1px solid var(--accent);
+    border-top: 1px solid rgba(0,255,65,0.2);
   }
   .bottom-bar .mode {
     background: var(--accent);
@@ -242,6 +331,7 @@
     border-radius: 3px;
     font-weight: 700;
     font-size: 10px;
+    box-shadow: 0 0 6px rgba(0,255,65,0.4);
   }
   .bottom-bar .file { color: var(--c15); }
 
@@ -250,7 +340,7 @@
     width: 1100px;
   }
   .palette-label {
-    color: #666;
+    color: var(--c8);
     font-size: 11px;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -271,16 +361,16 @@
     width: 64px;
     height: 44px;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    border: 1px solid rgba(0,255,65,0.12);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
   .swatch-name {
-    color: #888;
+    color: var(--c8);
     font-size: 9px;
     letter-spacing: 1px;
   }
   .swatch-hex {
-    color: #555;
+    color: #444;
     font-size: 9px;
   }
 
@@ -294,29 +384,32 @@
     border: 2px solid var(--accent);
     border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,255,65,0.2);
   }
 
   /* ── Walker launcher ── */
   .walker {
     width: 440px;
     margin: 0 auto;
-    background: var(--bg);
+    background: rgba(10,10,10,0.95);
     border: 2px solid var(--accent);
     border-radius: 10px;
     padding: 12px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 20px rgba(0,255,65,0.15);
+    backdrop-filter: blur(12px);
   }
   .walker-input {
     width: 100%;
-    background: var(--c15);
-    border: 1px solid var(--c7);
+    background: rgba(13,13,13,0.9);
+    border: 1px solid rgba(0,255,65,0.3);
     border-radius: 6px;
     padding: 10px 14px;
     font-family: inherit;
     font-size: 14px;
-    color: var(--fg);
+    color: var(--accent);
     outline: none;
     margin-bottom: 10px;
+    text-shadow: var(--glow-subtle);
   }
   .walker-item {
     padding: 8px 12px;
@@ -325,10 +418,12 @@
     color: var(--fg);
     display: flex;
     justify-content: space-between;
+    transition: background 0.15s;
   }
   .walker-item.active {
     background: var(--accent);
-    color: var(--sel-fg);
+    color: var(--c0);
+    box-shadow: 0 0 10px rgba(0,255,65,0.3);
   }
   .walker-item .shortcut {
     font-size: 11px;
@@ -338,7 +433,10 @@
 </head>
 <body>
 
-<h1>Spectre — Light Hacker Theme for Omarchy</h1>
+<!-- Matrix rain background -->
+<div class="matrix-rain" id="matrixRain"></div>
+
+<h1>Spectre — Dark Matrix Theme for Omarchy</h1>
 
 <!-- Desktop -->
 <div class="desktop-wrapper">
@@ -361,7 +459,7 @@
       <div class="waybar-right">
         <span style="color:var(--c14)">cpu 12%</span>
         <span class="dim">|</span>
-        <span style="color:var(--c10)">mem 4.2G</span>
+        <span style="color:var(--c10);text-shadow:var(--glow-subtle)">mem 4.2G</span>
         <span class="dim">|</span>
         <span style="color:var(--c15)">Feb 18 10:42</span>
       </div>
@@ -372,9 +470,9 @@
       <!-- Terminal -->
       <div class="terminal">
         <div class="term-header">
-          <div class="term-dot" style="background:var(--c1)"></div>
-          <div class="term-dot" style="background:var(--c3)"></div>
-          <div class="term-dot" style="background:var(--c2)"></div>
+          <div class="term-dot" style="background:var(--c1);color:var(--c1)"></div>
+          <div class="term-dot" style="background:var(--c3);color:var(--c3)"></div>
+          <div class="term-dot" style="background:var(--c2);color:var(--c2)"></div>
           <span class="term-title">ghostty — ~</span>
         </div>
         <div class="term-line"><span class="comment"># network reconnaissance</span></div>
@@ -460,15 +558,15 @@
       <div style="display:flex;gap:16px">
         <span>utf-8</span>
         <span>python</span>
-        <span style="color:var(--accent)">11:5</span>
+        <span style="color:var(--accent);text-shadow:var(--glow-subtle)">11:5</span>
       </div>
     </div>
   </div>
 
   <!-- Notification -->
   <div class="notification">
-    <div class="ntitle">SYSTEM ALERT</div>
-    <div>New SSH connection from <span style="color:var(--accent)">10.10.14.7</span></div>
+    <div class="ntitle">⚠ SYSTEM ALERT</div>
+    <div>New SSH connection from <span style="color:var(--accent);text-shadow:var(--glow-subtle)">10.10.14.7</span></div>
   </div>
 </div>
 
@@ -495,29 +593,29 @@
   <div class="palette-label">Semantic Colors</div>
   <div class="palette" style="margin-bottom: 24px">
     <div class="swatch">
-      <div class="swatch-color" style="background:var(--accent)"></div>
+      <div class="swatch-color" style="background:var(--accent);box-shadow:0 0 12px rgba(0,255,65,0.4)"></div>
       <div class="swatch-name">accent</div>
-      <div class="swatch-hex">#00BB33</div>
+      <div class="swatch-hex">#00FF41</div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:var(--cursor)"></div>
+      <div class="swatch-color" style="background:var(--cursor);box-shadow:0 0 12px rgba(0,255,65,0.4)"></div>
       <div class="swatch-name">cursor</div>
-      <div class="swatch-hex">#00BB33</div>
+      <div class="swatch-hex">#00FF41</div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:var(--fg)"></div>
       <div class="swatch-name">foreground</div>
-      <div class="swatch-hex">#0A2010</div>
+      <div class="swatch-hex">#00CC33</div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:var(--bg); border: 1px solid #ccc"></div>
+      <div class="swatch-color" style="background:var(--bg)"></div>
       <div class="swatch-name">background</div>
-      <div class="swatch-hex">#E0F0E0</div>
+      <div class="swatch-hex">#0A0A0A</div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:var(--sel-bg)"></div>
+      <div class="swatch-color" style="background:var(--sel-bg);box-shadow:0 0 12px rgba(0,255,65,0.4)"></div>
       <div class="swatch-name">selection</div>
-      <div class="swatch-hex">#00BB33</div>
+      <div class="swatch-hex">#00FF41</div>
     </div>
   </div>
 
@@ -526,42 +624,42 @@
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c0)"></div>
       <div class="swatch-name">black</div>
-      <div class="swatch-hex">#0A2010</div>
+      <div class="swatch-hex">#0D0D0D</div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:var(--c1)"></div>
+      <div class="swatch-color" style="background:var(--c1);box-shadow:0 0 8px rgba(255,0,51,0.3)"></div>
       <div class="swatch-name">red</div>
-      <div class="swatch-hex">#992200</div>
+      <div class="swatch-hex">#FF0033</div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:var(--c2)"></div>
+      <div class="swatch-color" style="background:var(--c2);box-shadow:0 0 8px rgba(0,255,65,0.3)"></div>
       <div class="swatch-name">green</div>
-      <div class="swatch-hex">#006622</div>
+      <div class="swatch-hex">#00FF41</div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c3)"></div>
       <div class="swatch-name">yellow</div>
-      <div class="swatch-hex">#6B8800</div>
+      <div class="swatch-hex">#CCFF00</div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c4)"></div>
       <div class="swatch-name">blue</div>
-      <div class="swatch-hex">#2D6655</div>
+      <div class="swatch-hex">#0088FF</div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c5)"></div>
       <div class="swatch-name">magenta</div>
-      <div class="swatch-hex">#556B44</div>
+      <div class="swatch-hex">#9B59B6</div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c6)"></div>
       <div class="swatch-name">cyan</div>
-      <div class="swatch-hex">#007744</div>
+      <div class="swatch-hex">#00FFCC</div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c7)"></div>
       <div class="swatch-name">white</div>
-      <div class="swatch-hex">#5A8A5A</div>
+      <div class="swatch-hex">#33FF66</div>
     </div>
   </div>
 
@@ -570,45 +668,72 @@
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c8)"></div>
       <div class="swatch-name">brblack</div>
-      <div class="swatch-hex">#3A6A3A</div>
+      <div class="swatch-hex">#1A3A1A</div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:var(--c9)"></div>
+      <div class="swatch-color" style="background:var(--c9);box-shadow:0 0 8px rgba(255,51,85,0.3)"></div>
       <div class="swatch-name">brred</div>
-      <div class="swatch-hex">#BB3300</div>
+      <div class="swatch-hex">#FF3355</div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:var(--c10)"></div>
+      <div class="swatch-color" style="background:var(--c10);box-shadow:0 0 8px rgba(0,255,65,0.3)"></div>
       <div class="swatch-name">brgreen</div>
-      <div class="swatch-hex">#00BB33</div>
+      <div class="swatch-hex">#00FF41</div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c11)"></div>
       <div class="swatch-name">bryellow</div>
-      <div class="swatch-hex">#88AA00</div>
+      <div class="swatch-hex">#E5FF00</div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c12)"></div>
       <div class="swatch-name">brblue</div>
-      <div class="swatch-hex">#448877</div>
+      <div class="swatch-hex">#33AAFF</div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c13)"></div>
       <div class="swatch-name">brmagenta</div>
-      <div class="swatch-hex">#667755</div>
+      <div class="swatch-hex">#BB77FF</div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:var(--c14)"></div>
       <div class="swatch-name">brcyan</div>
-      <div class="swatch-hex">#009955</div>
+      <div class="swatch-hex">#33FFDD</div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:var(--c15); border: 1px solid #ccc"></div>
+      <div class="swatch-color" style="background:var(--c15)"></div>
       <div class="swatch-name">brwhite</div>
-      <div class="swatch-hex">#C5E5C5</div>
+      <div class="swatch-hex">#BBFFBB</div>
     </div>
   </div>
 </div>
+
+<script>
+// Generate Matrix rain columns
+(function() {
+  const container = document.getElementById('matrixRain');
+  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+  const colCount = 60;
+  
+  for (let i = 0; i < colCount; i++) {
+    const col = document.createElement('div');
+    col.className = 'col';
+    col.style.left = (i / colCount * 100) + '%';
+    col.style.animationDuration = (4 + Math.random() * 8) + 's';
+    col.style.animationDelay = (-Math.random() * 12) + 's';
+    col.style.opacity = 0.3 + Math.random() * 0.7;
+    col.style.fontSize = (10 + Math.random() * 8) + 'px';
+    
+    let text = '';
+    const len = 15 + Math.floor(Math.random() * 30);
+    for (let j = 0; j < len; j++) {
+      text += chars[Math.floor(Math.random() * chars.length)] + '\n';
+    }
+    col.textContent = text;
+    container.appendChild(col);
+  }
+})();
+</script>
 
 </body>
 </html>

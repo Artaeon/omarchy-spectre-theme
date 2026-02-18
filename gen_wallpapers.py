@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Generate bold Matrix-themed light wallpapers for omarchy spectre theme."""
+"""Generate dark Matrix-themed wallpapers for omarchy spectre theme."""
 
 import random
 import math
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 W, H = 3840, 2160
-BG = (224, 240, 224)
+BG = (10, 10, 10)
 
 MATRIX_CHARS = list("アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン")
 HEX = "0123456789ABCDEF"
@@ -33,7 +33,7 @@ def get_font(size):
 
 
 def wallpaper_matrix_rain():
-    """Bold, dense Matrix digital rain with large visible characters."""
+    """Bright neon green Matrix digital rain on deep black."""
     img = Image.new("RGB", (W, H), BG)
     draw = ImageDraw.Draw(img)
 
@@ -46,13 +46,13 @@ def wallpaper_matrix_rain():
     char_height = 36
     cols = W // col_width + 1
 
-    # Layer 1: Background scatter (subtle depth)
+    # Layer 1: Background scatter (ghostly glow)
     for _ in range(5000):
         x = random.randint(0, W)
         y = random.randint(0, H)
         char = random.choice(MATRIX_CHARS)
-        a = random.uniform(0.06, 0.14)
-        draw.text((x, y), char, fill=blend(BG, (40, 140, 40), a), font=font_sm)
+        a = random.uniform(0.04, 0.10)
+        draw.text((x, y), char, fill=blend(BG, (0, 255, 65), a), font=font_sm)
 
     # Layer 2: Main dense rain streams
     for col in range(cols):
@@ -72,29 +72,30 @@ def wallpaper_matrix_rain():
                 t = i / stream_len
 
                 if i == 0:
-                    color = blend(BG, (0, 60, 0), 0.92)
+                    # Head of stream: brightest white-green
+                    color = blend(BG, (180, 255, 200), 0.95)
                     f = font_lg
                 elif i == 1:
-                    color = blend(BG, (0, 70, 10), 0.82)
+                    color = blend(BG, (100, 255, 130), 0.85)
                     f = font_lg
                 elif t < 0.15:
-                    color = blend(BG, (0, 80, 10), 0.72)
+                    color = blend(BG, (0, 255, 65), 0.80)
                     f = font_lg
                 elif t < 0.35:
                     fade = (t - 0.15) / 0.2
-                    color = blend(BG, (0, 90, 15), 0.65 - 0.15 * fade)
+                    color = blend(BG, (0, 220, 55), 0.70 - 0.15 * fade)
                     f = font_md
                 elif t < 0.6:
                     fade = (t - 0.35) / 0.25
-                    color = blend(BG, (10, 105, 25), 0.45 - 0.15 * fade)
+                    color = blend(BG, (0, 180, 40), 0.50 - 0.15 * fade)
                     f = font_md
                 elif t < 0.85:
                     fade = (t - 0.6) / 0.25
-                    color = blend(BG, (30, 130, 40), 0.28 - 0.10 * fade)
+                    color = blend(BG, (0, 130, 30), 0.30 - 0.10 * fade)
                     f = font_sm
                 else:
                     fade = (t - 0.85) / 0.15
-                    color = blend(BG, (60, 160, 60), 0.15 - 0.06 * fade)
+                    color = blend(BG, (0, 80, 20), 0.15 - 0.06 * fade)
                     f = font_sm
 
                 draw.text((x, y), char, fill=color, font=f)
@@ -112,8 +113,8 @@ def wallpaper_matrix_rain():
                 continue
             char = random.choice(MATRIX_CHARS)
             t = i / stream_len
-            alpha = 0.50 * (1 - t * 0.8)
-            draw.text((x, y), char, fill=blend(BG, (0, 90, 15), alpha), font=font_md)
+            alpha = 0.55 * (1 - t * 0.8)
+            draw.text((x, y), char, fill=blend(BG, (0, 200, 50), alpha), font=font_md)
 
     img = img.filter(ImageFilter.GaussianBlur(radius=0.3))
     img.save("backgrounds/1-matrix-rain.png", "PNG", optimize=True)
@@ -121,14 +122,14 @@ def wallpaper_matrix_rain():
 
 
 def wallpaper_circuit():
-    """Dense circuit board with thick traces and large nodes."""
+    """Dense circuit board with neon green traces on dark background."""
     img = Image.new("RGB", (W, H), BG)
     draw = ImageDraw.Draw(img)
     random.seed(77)
 
-    dark = (0, 75, 20)
-    med = (0, 95, 25)
-    light = (30, 130, 40)
+    bright = (0, 255, 65)
+    med = (0, 200, 50)
+    dark = (0, 150, 35)
 
     # Grid of thick horizontal traces
     for _ in range(120):
@@ -136,7 +137,7 @@ def wallpaper_circuit():
         x1 = random.randint(0, W)
         length = random.randint(200, 1200)
         w = random.choice([1, 2, 2, 3])
-        a = random.uniform(0.20, 0.50)
+        a = random.uniform(0.15, 0.45)
         draw.line([(x1, y), (x1 + length, y)], fill=blend(BG, dark, a), width=w)
 
     # Grid of thick vertical traces
@@ -145,7 +146,7 @@ def wallpaper_circuit():
         y1 = random.randint(0, H)
         length = random.randint(200, 900)
         w = random.choice([1, 2, 2, 3])
-        a = random.uniform(0.20, 0.50)
+        a = random.uniform(0.15, 0.45)
         draw.line([(x, y1), (x, y1 + length)], fill=blend(BG, dark, a), width=w)
 
     # Connection nodes
@@ -162,20 +163,20 @@ def wallpaper_circuit():
             dist = math.hypot(x2 - x1, y2 - y1)
             if dist > 350:
                 continue
-            a = 0.25 + 0.25 * (1 - dist / 350)
+            a = 0.20 + 0.25 * (1 - dist / 350)
             color = blend(BG, dark, a)
-            w = 2 if a > 0.35 else 1
+            w = 2 if a > 0.30 else 1
             mid_x = x1 if random.random() < 0.5 else x2
             draw.line([(x1, y1), (mid_x, y2), (x2, y2)], fill=color, width=w)
 
-    # Large node dots
+    # Large node dots — glowing green
     for x, y in nodes:
         size = random.randint(4, 10)
-        a = random.uniform(0.45, 0.85)
+        a = random.uniform(0.40, 0.85)
         draw.ellipse([x - size, y - size, x + size, y + size], fill=blend(BG, med, a))
         # Inner bright dot
         if size > 5:
-            draw.ellipse([x - 2, y - 2, x + 2, y + 2], fill=blend(BG, (0, 60, 10), a * 0.9))
+            draw.ellipse([x - 2, y - 2, x + 2, y + 2], fill=blend(BG, bright, a * 0.9))
 
     # IC chips - larger
     for _ in range(70):
@@ -183,27 +184,27 @@ def wallpaper_circuit():
         y = random.randint(50, H - 60)
         w = random.randint(25, 65)
         h = random.randint(18, 40)
-        a = random.uniform(0.25, 0.50)
+        a = random.uniform(0.20, 0.45)
         color = blend(BG, dark, a)
         draw.rectangle([x, y, x + w, y + h], outline=color, width=2)
-        fill_a = a * 0.15
+        fill_a = a * 0.10
         draw.rectangle([x + 1, y + 1, x + w - 1, y + h - 1], fill=blend(BG, med, fill_a))
-        pin_color = blend(BG, dark, a * 0.8)
+        pin_color = blend(BG, dark, a * 0.7)
         for px in range(x + 5, x + w - 3, 8):
             draw.line([(px, y - 6), (px, y)], fill=pin_color, width=2)
             draw.line([(px, y + h), (px, y + h + 6)], fill=pin_color, width=2)
 
-    # Target rings
+    # Target rings — glowing
     for _ in range(20):
         cx = random.randint(100, W - 100)
         cy = random.randint(100, H - 100)
         max_r = random.randint(50, 140)
         for r in range(12, max_r, 18):
-            a = 0.20 * (1 - r / max_r)
+            a = 0.18 * (1 - r / max_r)
             if a > 0.03:
                 draw.ellipse([cx - r, cy - r, cx + r, cy + r],
                              outline=blend(BG, med, a), width=2)
-        draw.ellipse([cx - 4, cy - 4, cx + 4, cy + 4], fill=blend(BG, dark, 0.5))
+        draw.ellipse([cx - 4, cy - 4, cx + 4, cy + 4], fill=blend(BG, bright, 0.5))
 
     img = img.filter(ImageFilter.GaussianBlur(radius=0.3))
     img.save("backgrounds/2-circuit.png", "PNG", optimize=True)
@@ -211,22 +212,19 @@ def wallpaper_circuit():
 
 
 def wallpaper_hexdump():
-    """Full-screen hex dump covering entire display like a forensic tool."""
+    """Full-screen hex dump with neon green text on black like a forensic tool."""
     img = Image.new("RGB", (W, H), BG)
     draw = ImageDraw.Draw(img)
 
-    # Calculate font size to fill width: need ~140 chars across 3840px
-    # ADDR(10) + HEX(64*3=192 with spaces) + GAP(3) + ASCII(64) ≈ 200 chars
-    # 3840/200 ≈ 19px per char -> font ~28
     font = get_font(26)
     font_sm = get_font(22)
 
     random.seed(55)
     line_h = 32
-    cw = 15  # measured char width at font 26
+    cw = 15
     rows = H // line_h + 1
     margin = 20
-    bytes_per_line = 56  # fills width nicely
+    bytes_per_line = 56
 
     addr_end = margin + 10 * cw
     hex_start = addr_end + cw
@@ -234,17 +232,17 @@ def wallpaper_hexdump():
     ascii_start = hex_end + 2 * cw
 
     # Separator lines
-    sep = blend(BG, (0, 80, 20), 0.18)
+    sep = blend(BG, (0, 255, 65), 0.12)
     draw.line([(addr_end, 0), (addr_end, H)], fill=sep, width=1)
     draw.line([(ascii_start - cw, 0), (ascii_start - cw, H)], fill=sep, width=1)
 
     # Header
-    hdr_color = blend(BG, (0, 60, 10), 0.55)
+    hdr_color = blend(BG, (0, 255, 65), 0.55)
     draw.text((margin, 4), "OFFSET", fill=hdr_color, font=font_sm)
     hdr_bytes = " ".join(f"{i:02X}" for i in range(min(bytes_per_line, 32)))
-    draw.text((hex_start, 4), hdr_bytes + " ...", fill=blend(BG, (0, 60, 10), 0.35), font=font_sm)
+    draw.text((hex_start, 4), hdr_bytes + " ...", fill=blend(BG, (0, 255, 65), 0.35), font=font_sm)
     draw.text((ascii_start, 4), "DECODED ASCII", fill=hdr_color, font=font_sm)
-    draw.line([(margin, 32), (W - margin, 32)], fill=blend(BG, (0, 90, 20), 0.30), width=2)
+    draw.line([(margin, 32), (W - margin, 32)], fill=blend(BG, (0, 255, 65), 0.25), width=2)
 
     hot_zones = [
         (0.08, 0.22, 0.85),
@@ -264,30 +262,30 @@ def wallpaper_hexdump():
                 dist = abs(row_pos - mid) / ((z_end - z_start) / 2)
                 intensity = max(intensity, z_peak * (1 - dist ** 2))
 
-        base_alpha = 0.08 + 0.58 * intensity
+        base_alpha = 0.06 + 0.55 * intensity
 
         # Address
         addr = row * bytes_per_line
-        draw.text((margin, y), f"{addr:08X}", fill=blend(BG, (0, 65, 12), base_alpha * 0.75), font=font)
+        draw.text((margin, y), f"{addr:08X}", fill=blend(BG, (0, 200, 50), base_alpha * 0.70), font=font)
 
-        # Hex bytes - fills the wide middle section
+        # Hex bytes
         for col in range(bytes_per_line):
             bx = hex_start + col * 3 * cw
             if col % 8 == 0 and col > 0:
-                bx += cw  # group separator every 8 bytes
+                bx += cw
 
             b = f"{random.randint(0,255):02X}"
             v = random.uniform(0.5, 1.5)
-            a = max(0.05, min(0.85, base_alpha * v))
+            a = max(0.04, min(0.85, base_alpha * v))
 
             if random.random() < 0.05 and intensity > 0.4:
-                a = min(0.90, a * 2.2)
-                fg = (0, 45, 5)
+                a = min(0.95, a * 2.2)
+                fg = (0, 255, 65)
             elif random.random() < 0.03:
-                a = min(0.80, a * 1.8)
-                fg = (0, 110, 20)
+                a = min(0.85, a * 1.8)
+                fg = (100, 255, 130)
             else:
-                fg = (0, 85, 18)
+                fg = (0, 220, 55)
 
             draw.text((bx, y), b, fill=blend(BG, fg, a), font=font)
 
@@ -297,14 +295,14 @@ def wallpaper_hexdump():
             if ax > W - margin:
                 break
             char = chr(random.randint(33, 126)) if random.random() > 0.3 else random.choice("._-:;|")
-            draw.text((ax, y), char, fill=blend(BG, (0, 85, 18), base_alpha * 0.55), font=font_sm)
+            draw.text((ax, y), char, fill=blend(BG, (0, 200, 50), base_alpha * 0.50), font=font_sm)
 
     # Hot zone glow bars
     for z_start, z_end, _ in hot_zones:
         mid_y = int(((z_start + z_end) / 2) * H)
         for dy in range(-6, 7):
-            la = 0.08 * (1 - abs(dy) / 7)
-            draw.line([(0, mid_y + dy), (W, mid_y + dy)], fill=blend(BG, (0, 150, 35), la))
+            la = 0.06 * (1 - abs(dy) / 7)
+            draw.line([(0, mid_y + dy), (W, mid_y + dy)], fill=blend(BG, (0, 255, 65), la))
 
     img = img.filter(ImageFilter.GaussianBlur(radius=0.2))
     img.save("backgrounds/3-hexdump.png", "PNG", optimize=True)
