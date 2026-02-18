@@ -1359,6 +1359,343 @@ def wallpaper_praying_hands():
     print("Saved backgrounds/12-praying-hands.png")
 
 
+# ─────────────────────────────────────────────────────────────
+# 13. Alice Rabbit & Time — Alice rabbit with a clock and Eccl 3:1
+# ─────────────────────────────────────────────────────────────
+def wallpaper_alice_time():
+    """Alice in Wonderland rabbit with a clock and Ecclesiastes 3:1."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(1234)
+
+    font_bg = get_font(10)
+    font_sm = get_font(16)
+    font_md = get_font(22)
+    font_lg = get_font(32)
+    font_verse = get_font(40)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    chars = MATRIX_CHARS + list("TIC-TOK")
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(6000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.05)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    def in_rabbit(px, py):
+        """Simple rabbit silhouette (Alice style with waistcoat/clock)."""
+        nx = (px - (cx - 400)) / 300
+        ny = (py - (cy + 200)) / 400
+
+        # Body (waistcoat)
+        if nx**2 + ny**2 < 0.15:
+            return True
+        # Head
+        if nx**2 + (ny + 0.5)**2 < 0.05:
+            return True
+        # Ears
+        if abs(nx - 0.05) < 0.03 and -0.9 < ny < -0.55:
+            return True
+        if abs(nx + 0.05) < 0.03 and -0.85 < ny < -0.5:
+            return True
+        return False
+
+    def in_clock(px, py):
+        """Pocket watch silhouette."""
+        nx = (px - (cx + 400)) / 250
+        ny = (py - cy) / 250
+        dist = nx**2 + ny**2
+        if 0.8 < dist < 1.0: # rim
+            return "rim"
+        if dist < 0.8: # face
+            return "face"
+        # stem
+        if abs(nx) < 0.05 and -1.1 < ny < -1.0:
+            return "rim"
+        return None
+
+    # Fill rabbit
+    step = 14
+    for y in range(cy - 400, cy + 600, step):
+        for x in range(cx - 700, cx - 100, step):
+            if in_rabbit(x, y):
+                char = random.choice(chars)
+                a = random.uniform(0.4, 0.8)
+                draw.text((x, y), char, fill=blend(BG, bright, a), font=font_md)
+
+    # Fill clock
+    for y in range(cy - 300, cy + 300, step):
+        for x in range(cx + 150, cx + 650, step):
+            part = in_clock(x, y)
+            if part == "rim":
+                draw.text((x, y), random.choice("01"), fill=blend(BG, bright, 0.9), font=font_lg)
+            elif part == "face":
+                draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, 0.3), font=font_sm)
+
+    # Clock hands
+    draw.line([(cx+400, cy), (cx+400, cy-150)], fill=blend(BG, bright, 0.9), width=4)
+    draw.line([(cx+400, cy), (cx+520, cy+50)], fill=blend(BG, bright, 0.9), width=4)
+
+    # Verse: Ecclesiastes 3:1
+    verse = "To everything there is a season, and a time to every purpose under the heaven."
+    tw = draw.textlength(verse, font=font_verse)
+    draw.text(((W - tw) // 2, cy - 400), verse, fill=blend(BG, bright, 0.8), font=font_verse)
+    draw.text(((W - draw.textlength("ECCLESIASTES 3:1", font=font_md)) // 2, cy - 340), "ECCLESIASTES 3:1", fill=blend(BG, green, 0.6), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/13-alice-time.png", "PNG", optimize=True)
+    print("Saved backgrounds/13-alice-time.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 14. Kingdom of God — Crown and Daniel 2:44
+# ─────────────────────────────────────────────────────────────
+def wallpaper_kingdom():
+    """Kingdom of God Crown with Daniel 2:44."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(244)
+
+    font_bg = get_font(10)
+    font_md = get_font(24)
+    font_lg = get_font(40)
+    font_verse = get_font(36)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    gold = (212, 175, 55)
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(6000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.05)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    def in_crown(px, py):
+        """Regal crown silhouette."""
+        nx = (px - cx) / 500
+        ny = (py - cy) / 400
+        if -0.6 < nx < 0.6 and 0.1 < ny < 0.4: # base
+            return "base"
+        # peaks
+        if -0.6 < nx < -0.4 and -0.2 < ny < 0.1 and abs(nx+0.5) < 0.1 * (1-(ny+0.2)/0.3):
+             return "peak"
+        if -0.1 < nx < 0.1 and -0.4 < ny < 0.1 and abs(nx) < 0.1 * (1-(ny+0.4)/0.5):
+             return "peak"
+        if 0.4 < nx < 0.6 and -0.2 < ny < 0.1 and abs(nx-0.5) < 0.1 * (1-(ny+0.2)/0.3):
+             return "peak"
+        return None
+
+    # Fill crown
+    step = 16
+    for y in range(cy - 400, cy + 400, step):
+        for x in range(cx - 500, cx + 500, step):
+            part = in_crown(x, y)
+            if part:
+                a = random.uniform(0.5, 0.9)
+                c = bright if part == "peak" else green
+                draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, c, a), font=font_md)
+
+    # Verse: Daniel 2:44
+    verse = "And the God of heaven will set up a kingdom which shall never be destroyed."
+    tw = draw.textlength(verse, font=font_verse)
+    draw.text(((W - tw) // 2, cy + 300), verse, fill=blend(BG, bright, 0.8), font=font_verse)
+    draw.text(((W - draw.textlength("DANIEL 2:44", font=font_md)) // 2, cy + 360), "DANIEL 2:44", fill=blend(BG, green, 0.6), font=font_md)
+
+    # Glow rays
+    for i in range(200):
+        length = random.randint(300, 600)
+        angle = random.uniform(0, 2*math.pi)
+        draw.line([(cx, cy), (cx + length*math.cos(angle), cy + length*math.sin(angle))], fill=blend(BG, gold, 0.1), width=1)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/14-kingdom.png", "PNG", optimize=True)
+    print("Saved backgrounds/14-kingdom.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 15. Armor of God — Shield and Ephesians 6:11
+# ─────────────────────────────────────────────────────────────
+def wallpaper_armor():
+    """Armor of God Shield with Ephesians 6:11."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(611)
+
+    font_bg = get_font(10)
+    font_md = get_font(24)
+    font_lg = get_font(40)
+    font_verse = get_font(36)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(6000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.05)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    def in_shield(px, py):
+        """Knight shield silhouette."""
+        nx = (px - cx) / 400
+        ny = (py - cy) / 500
+        if -0.7 < nx < 0.7 and -0.8 < ny < 0.4:
+            # tapers to point
+            if ny > 0.4: return False
+            if ny < 0 and abs(nx) < 0.7: return True
+            if ny >= 0 and abs(nx) < 0.7 * (1 - (ny-0)/0.8): return True
+        return False
+
+    # Fill shield
+    step = 16
+    for y in range(cy - 500, cy + 500, step):
+        for x in range(cx - 400, cx + 400, step):
+            if in_shield(x, y):
+                a = random.uniform(0.4, 0.9)
+                draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_md)
+
+    # Cross on shield
+    for y in range(cy - 400, cy + 200, 20):
+        draw.text((cx-10, y), "✝", fill=blend(BG, bright, 0.9), font=font_lg)
+    for x in range(cx - 150, cx + 150, 20):
+        draw.text((x, cy-150), "✝", fill=blend(BG, bright, 0.9), font=font_lg)
+
+    # Verse: Ephesians 6:11
+    verse = "Put on the whole armor of God, that you may be able to stand against the wiles of the devil."
+    # Wrap text manually if needed or use small font
+    font_v = get_font(30)
+    draw.text((cx - 700, cy + 400), verse, fill=blend(BG, bright, 0.8), font=font_v)
+    draw.text((cx - 100, cy + 450), "EPHESIANS 6:11", fill=blend(BG, green, 0.6), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/15-armor.png", "PNG", optimize=True)
+    print("Saved backgrounds/15-armor.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 16. Lamb of God — Lamb silhouette and John 1:29
+# ─────────────────────────────────────────────────────────────
+def wallpaper_lamb():
+    """Lamb of God with John 1:29."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(129)
+
+    font_bg = get_font(10)
+    font_md = get_font(24)
+    font_lg = get_font(40)
+    font_verse = get_font(36)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(6000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.05)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    def in_lamb(px, py):
+        """Simple lamb silhouette."""
+        nx = (px - cx) / 400
+        ny = (py - cy) / 400
+        # Body
+        if (nx+0.2)**2 + ny**2 < 0.15:
+            return True
+        # Head
+        if (nx-0.4)**2 + (ny+0.3)**2 < 0.02:
+            return True
+        # Legs
+        if abs(nx+0.4) < 0.02 and 0 < ny < 0.4: return True
+        if abs(nx+0.0) < 0.02 and 0 < ny < 0.4: return True
+        return False
+
+    # Fill lamb
+    step = 14
+    for y in range(cy - 300, cy + 300, step):
+        for x in range(cx - 500, cx + 500, step):
+            if in_lamb(x, y):
+                a = random.uniform(0.6, 1.0)
+                draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, bright, a), font=font_md)
+
+    # Verse: John 1:29
+    verse = "Behold! The Lamb of God who takes away the sin of the world!"
+    tw = draw.textlength(verse, font=font_verse)
+    draw.text(((W - tw) // 2, cy + 350), verse, fill=blend(BG, bright, 0.8), font=font_verse)
+    draw.text(((W - draw.textlength("JOHN 1:29", font=font_md)) // 2, cy + 410), "JOHN 1:29", fill=blend(BG, green, 0.6), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/16-lamb.png", "PNG", optimize=True)
+    print("Saved backgrounds/16-lamb.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 17. Alpha & Omega — Symbols and Revelation 22:13
+# ─────────────────────────────────────────────────────────────
+def wallpaper_alpha_omega():
+    """Alpha & Omega symbols with Revelation 22:13."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(2213)
+
+    font_bg = get_font(10)
+    font_sm = get_font(20)
+    font_md = get_font(24)
+    font_lg = get_font(50)
+    font_xl = get_font(300)
+    font_verse = get_font(36)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(6000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.05)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Alpha & Omega text
+    draw.text((cx - 600, cy - 200), "Α", fill=blend(BG, bright, 0.4), font=font_xl)
+    draw.text((cx + 200, cy - 200), "Ω", fill=blend(BG, bright, 0.4), font=font_xl)
+
+    # Central vortex of code
+    for i in range(1000):
+        radius = random.uniform(10, 800)
+        angle = random.uniform(0, 2*math.pi)
+        x = cx + radius * math.cos(angle)
+        y = cy + radius * math.sin(angle)
+        a = 0.8 * (1 - radius / 800)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_sm)
+
+    # Verse: Revelation 22:13
+    verse = "I am Alpha and Omega, the beginning and the end, the first and the last."
+    tw = draw.textlength(verse, font=font_verse)
+    draw.text(((W - tw) // 2, cy + 400), verse, fill=blend(BG, bright, 0.8), font=font_verse)
+    draw.text(((W - draw.textlength("REVELATION 22:13", font=font_md)) // 2, cy + 460), "REVELATION 22:13", fill=blend(BG, green, 0.6), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/17-alpha-omega.png", "PNG", optimize=True)
+    print("Saved backgrounds/17-alpha-omega.png")
+
+
 if __name__ == "__main__":
     wallpaper_matrix_rain()
     wallpaper_circuit()
@@ -1372,4 +1709,10 @@ if __name__ == "__main__":
     wallpaper_crown_of_thorns()
     wallpaper_ichthys()
     wallpaper_praying_hands()
-    print("Done! Generated 12 wallpapers.")
+    wallpaper_alice_time()
+    wallpaper_kingdom()
+    wallpaper_armor()
+    wallpaper_lamb()
+    wallpaper_alpha_omega()
+    print("Done! Generated 17 wallpapers.")
+
