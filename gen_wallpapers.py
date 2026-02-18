@@ -1696,6 +1696,660 @@ def wallpaper_alpha_omega():
     print("Saved backgrounds/17-alpha-omega.png")
 
 
+# ─────────────────────────────────────────────────────────────
+# 18. Burning Bush — Exodus 3:14 "I AM THAT I AM"
+# ─────────────────────────────────────────────────────────────
+def wallpaper_burning_bush():
+    """Burning bush with Matrix flames and Exodus 3:14."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(314)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(22)
+    font_lg = get_font(30)
+    font_verse = get_font(42)
+    font_iam = get_font(80)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    fire_green = (0, 255, 100)
+    fire_bright = (150, 255, 180)
+    chars = MATRIX_CHARS + list("🔥✝01")
+
+    cx, cy = W // 2, H // 2 + 100
+
+    # Background scatter
+    for _ in range(5000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.04)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Bush trunk / base
+    trunk_w = 60
+    for y in range(cy + 100, cy + 350, 14):
+        for x in range(cx - trunk_w // 2, cx + trunk_w // 2, 14):
+            wobble = int(15 * math.sin(y * 0.05))
+            a = random.uniform(0.4, 0.6)
+            draw.text((x + wobble, y), random.choice(MATRIX_CHARS),
+                      fill=blend(BG, green, a), font=font_md)
+
+    # Bush canopy — dense tree shape filled with "flames"
+    def in_bush(px, py):
+        nx = (px - cx) / 500
+        ny = (py - cy) / 350
+        # Oval canopy shape, wider at bottom
+        if ny > 0.3 or ny < -0.9:
+            return False
+        canopy_w = 0.7 * (1 - ((ny + 0.3) / 1.2) ** 2) ** 0.5
+        if abs(nx) < canopy_w:
+            return True
+        return False
+
+    # Fill bush with flame-like characters
+    step = 14
+    for y in range(cy - 350, cy + 150, step):
+        for x in range(cx - 450, cx + 450, step):
+            if in_bush(x, y):
+                char = random.choice(chars)
+                ny = (y - cy) / 350
+                # flicker intensity — brighter at top
+                flicker = random.uniform(0.5, 1.0)
+                if ny < -0.4:
+                    a = 0.90 * flicker
+                    c = fire_bright
+                    f = font_lg
+                elif ny < 0:
+                    a = 0.70 * flicker
+                    c = fire_green
+                    f = font_md
+                else:
+                    a = 0.50 * flicker
+                    c = green
+                    f = font_sm
+                draw.text((x + random.randint(-3, 3), y + random.randint(-3, 3)),
+                          char, fill=blend(BG, c, a), font=f)
+
+    # Rising "flames" — streams going upward above the bush
+    for col in range(cx - 350, cx + 350, 30):
+        stream_len = random.randint(5, 18)
+        start_y = cy - 320
+        for i in range(stream_len):
+            y = start_y - i * 32
+            if y < 50:
+                break
+            x = col + random.randint(-15, 15) + int(10 * math.sin(i * 0.8))
+            t = i / stream_len
+            a = max(0.05, 0.7 * (1 - t))
+            c = fire_bright if t < 0.3 else fire_green if t < 0.6 else green
+            draw.text((x, y), random.choice(MATRIX_CHARS),
+                      fill=blend(BG, c, a), font=font_sm)
+
+    # "I AM THAT I AM" — glowing text
+    iam_text = "I  A M  T H A T  I  A M"
+    tw = draw.textlength(iam_text, font=font_iam)
+    iam_x = (W - tw) // 2
+    iam_y = cy - 500
+    # Glow behind text
+    for dx in range(-4, 5):
+        for dy in range(-4, 5):
+            if dx == 0 and dy == 0:
+                continue
+            draw.text((iam_x + dx, iam_y + dy), iam_text,
+                      fill=blend(BG, fire_green, 0.15), font=font_iam)
+    draw.text((iam_x, iam_y), iam_text, fill=blend(BG, bright, 0.92), font=font_iam)
+
+    # Verse reference
+    verse = '"And God said unto Moses, I AM THAT I AM"'
+    tw = draw.textlength(verse, font=font_verse)
+    draw.text(((W - tw) // 2, cy + 400), verse, fill=blend(BG, bright, 0.75), font=font_verse)
+    ref = "EXODUS 3:14"
+    tw = draw.textlength(ref, font=font_md)
+    draw.text(((W - tw) // 2, cy + 460), ref, fill=blend(BG, green, 0.55), font=font_md)
+
+    # Radiant glow behind bush
+    for r in range(600, 0, -5):
+        a = 0.025 * (1 - r / 600) ** 2
+        if a > 0.001:
+            draw.ellipse([cx - r, cy - 100 - r, cx + r, cy - 100 + r],
+                         outline=blend(BG, fire_green, a))
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/18-burning-bush.png", "PNG", optimize=True)
+    print("Saved backgrounds/18-burning-bush.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 19. Eye of Providence — Proverbs 15:3
+# ─────────────────────────────────────────────────────────────
+def wallpaper_eye_of_providence():
+    """All-seeing eye in a triangle with Proverbs 15:3."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(153)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(22)
+    font_lg = get_font(30)
+    font_verse = get_font(36)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    chars = MATRIX_CHARS + list("01✝")
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(6000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.05)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Triangle
+    tri_h = 800
+    tri_w = 900
+    top = (cx, cy - tri_h // 2)
+    bl = (cx - tri_w // 2, cy + tri_h // 2)
+    br = (cx + tri_w // 2, cy + tri_h // 2)
+
+    def in_triangle(px, py):
+        """Point-in-triangle test."""
+        def sign(p1, p2, p3):
+            return (p1[0]-p3[0])*(p2[1]-p3[1])-(p2[0]-p3[0])*(p1[1]-p3[1])
+        d1 = sign((px, py), top, bl)
+        d2 = sign((px, py), bl, br)
+        d3 = sign((px, py), br, top)
+        has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0)
+        has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0)
+        return not (has_neg and has_pos)
+
+    def tri_edge_dist(px, py):
+        """Approximate distance to triangle edges."""
+        # Simplified: distance to each edge line
+        dists = []
+        edges = [(top, bl), (bl, br), (br, top)]
+        for (x1, y1), (x2, y2) in edges:
+            dx, dy = x2-x1, y2-y1
+            length = math.sqrt(dx**2 + dy**2)
+            if length == 0:
+                continue
+            d = abs(dy*px - dx*py + x2*y1 - y2*x1) / length
+            dists.append(d)
+        return min(dists) if dists else 999
+
+    # Fill triangle with characters
+    step = 16
+    for y in range(cy - tri_h // 2 - 10, cy + tri_h // 2 + 10, step):
+        for x in range(cx - tri_w // 2 - 10, cx + tri_w // 2 + 10, step):
+            if in_triangle(x, y):
+                ed = tri_edge_dist(x, y)
+                if ed < 30:
+                    a = random.uniform(0.70, 0.90)
+                    c = bright
+                    f = font_lg
+                elif ed < 70:
+                    a = random.uniform(0.40, 0.60)
+                    c = green
+                    f = font_md
+                else:
+                    a = random.uniform(0.15, 0.35)
+                    c = green
+                    f = font_sm
+                draw.text((x, y), random.choice(chars), fill=blend(BG, c, a), font=f)
+
+    # Eye in the center
+    eye_cy = cy + 30
+    eye_rx = 180
+    eye_ry = 90
+
+    # Eye outline (almond shape)
+    for t in range(0, 3600, 1):
+        angle = math.radians(t / 10)
+        ex = cx + int(eye_rx * math.cos(angle))
+        ey = eye_cy + int(eye_ry * math.sin(angle))
+        draw.point((ex, ey), fill=blend(BG, bright, 0.8))
+
+    # Iris
+    for r in range(80, 0, -2):
+        a = 0.6 * (1 - r / 80) ** 0.5
+        draw.ellipse([cx - r, eye_cy - r, cx + r, eye_cy + r],
+                     outline=blend(BG, bright, a))
+
+    # Pupil
+    for r in range(35, 0, -2):
+        a = 0.9 * (1 - r / 35)
+        draw.ellipse([cx - r, eye_cy - r, cx + r, eye_cy + r],
+                     fill=blend(BG, bright, a))
+
+    # Fill iris with dense Matrix chars
+    for _ in range(200):
+        angle = random.uniform(0, 2 * math.pi)
+        r = random.uniform(35, 80)
+        ex = cx + int(r * math.cos(angle))
+        ey = eye_cy + int(r * math.sin(angle))
+        a = random.uniform(0.3, 0.7)
+        draw.text((ex, ey), random.choice(MATRIX_CHARS),
+                  fill=blend(BG, green, a), font=font_sm)
+
+    # Light rays from the eye
+    for angle_deg in range(0, 360, 10):
+        angle = math.radians(angle_deg)
+        for r in range(100, 800, 3):
+            x = cx + int(r * math.cos(angle))
+            y = eye_cy + int(r * math.sin(angle))
+            if in_triangle(x, y) and 0 <= x < W and 0 <= y < H:
+                a = 0.05 * (1 - r / 800) ** 1.5
+                if a > 0.003:
+                    draw.point((x, y), fill=blend(BG, bright, a))
+
+    # Verse
+    verse = '"The eyes of the LORD are in every place, beholding the evil and the good."'
+    font_v = get_font(32)
+    tw = draw.textlength(verse, font=font_v)
+    draw.text(((W - tw) // 2, cy + tri_h // 2 + 50), verse,
+              fill=blend(BG, bright, 0.75), font=font_v)
+    ref = "PROVERBS 15:3"
+    tw = draw.textlength(ref, font=font_md)
+    draw.text(((W - tw) // 2, cy + tri_h // 2 + 100), ref,
+              fill=blend(BG, green, 0.55), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/19-eye-of-providence.png", "PNG", optimize=True)
+    print("Saved backgrounds/19-eye-of-providence.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 20. Lion of Judah — Revelation 5:5
+# ─────────────────────────────────────────────────────────────
+def wallpaper_lion_of_judah():
+    """Lion face silhouette made of Matrix characters with Revelation 5:5."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(505)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(20)
+    font_lg = get_font(28)
+    font_verse = get_font(34)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    gold = (200, 255, 150)
+    chars = MATRIX_CHARS + list("01✝")
+
+    cx, cy = W // 2, H // 2 - 50
+
+    # Background scatter
+    for _ in range(5000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.04)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    def in_lion(px, py):
+        """Lion face: mane ring + face + ears."""
+        nx = (px - cx) / 500
+        ny = (py - cy) / 500
+
+        # Mane (large fuzzy circle)
+        mane_dist = nx**2 + ny**2
+        # Irregular mane edge using sin waves
+        angle = math.atan2(ny, nx)
+        mane_r = 0.85 + 0.15 * math.sin(angle * 7) + 0.08 * math.sin(angle * 13)
+        if mane_dist < mane_r**2:
+            return "mane"
+
+        return None
+
+    def in_lion_face(px, py):
+        """Inner lion face features."""
+        nx = (px - cx) / 500
+        ny = (py - cy) / 500
+
+        # Face (smaller inner oval)
+        face_dist = (nx / 0.45)**2 + ((ny + 0.05) / 0.55)**2
+        if face_dist < 1:
+            # Eyes
+            for ex in [-0.18, 0.18]:
+                if (nx - ex)**2 + (ny + 0.12)**2 < 0.004:
+                    return "eye"
+            # Nose
+            if abs(nx) < 0.06 and -0.02 < ny < 0.10:
+                return "nose"
+            # Mouth
+            if abs(ny - 0.18) < 0.02 and abs(nx) < 0.12:
+                return "mouth"
+            return "face"
+        return None
+
+    # Fill mane
+    step = 14
+    for y in range(cy - 520, cy + 520, step):
+        for x in range(cx - 520, cx + 520, step):
+            part = in_lion(x, y)
+            face_part = in_lion_face(x, y)
+
+            if face_part == "eye":
+                # Bright glowing eyes
+                draw.text((x, y), random.choice("01"),
+                          fill=blend(BG, bright, 0.95), font=font_lg)
+            elif face_part == "nose":
+                draw.text((x, y), random.choice(chars),
+                          fill=blend(BG, bright, 0.7), font=font_md)
+            elif face_part == "mouth":
+                draw.text((x, y), random.choice(chars),
+                          fill=blend(BG, green, 0.5), font=font_sm)
+            elif face_part == "face":
+                a = random.uniform(0.25, 0.45)
+                draw.text((x, y), random.choice(chars),
+                          fill=blend(BG, green, a), font=font_sm)
+            elif part == "mane":
+                # Mane: denser, brighter at outer edge
+                nx = (x - cx) / 500
+                ny = (y - cy) / 500
+                dist = math.sqrt(nx**2 + ny**2)
+                if dist > 0.6:
+                    a = random.uniform(0.55, 0.85)
+                    c = gold
+                    f = font_lg
+                else:
+                    a = random.uniform(0.35, 0.55)
+                    c = green
+                    f = font_md
+                draw.text((x, y), random.choice(chars), fill=blend(BG, c, a), font=f)
+
+    # Radial glow
+    for r in range(600, 0, -4):
+        a = 0.02 * (1 - r / 600) ** 2
+        if a > 0.001:
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r],
+                         outline=blend(BG, gold, a))
+
+    # Verse
+    verse = '"The Lion of the tribe of Judah, the Root of David, has prevailed."'
+    tw = draw.textlength(verse, font=font_verse)
+    draw.text(((W - tw) // 2, cy + 520), verse,
+              fill=blend(BG, bright, 0.75), font=font_verse)
+    ref = "REVELATION 5:5"
+    tw2 = draw.textlength(ref, font=font_md)
+    draw.text(((W - tw2) // 2, cy + 570), ref,
+              fill=blend(BG, green, 0.55), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.4))
+    img.save("backgrounds/20-lion-of-judah.png", "PNG", optimize=True)
+    print("Saved backgrounds/20-lion-of-judah.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 21. Narrow Gate — Matthew 7:14
+# ─────────────────────────────────────────────────────────────
+def wallpaper_narrow_gate():
+    """A narrow glowing gate/doorway with Matrix rain flowing through it."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(714)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(22)
+    font_lg = get_font(30)
+    font_verse = get_font(34)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    chars = MATRIX_CHARS + list("01✝†")
+
+    cx, cy = W // 2, H // 2
+
+    # Background — dense Matrix rain everywhere (the "wide path")
+    for _ in range(10000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.03, 0.10)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Gate dimensions
+    gate_w = 200
+    gate_h = 900
+    gate_top = cy - gate_h // 2 - 50
+    gate_bot = cy + gate_h // 2 + 50
+    arch_r = gate_w // 2
+
+    def in_gate(px, py):
+        """Narrow gate with pointed arch."""
+        # Main opening
+        if abs(px - cx) < gate_w // 2 and gate_top + arch_r < py < gate_bot:
+            return "opening"
+        # Pointed arch at top
+        if py < gate_top + arch_r and py > gate_top:
+            # Pointed arch: two arcs meeting at a point
+            dist_from_top = gate_top + arch_r - py
+            arch_width = gate_w // 2 * (1 - (dist_from_top / arch_r) ** 0.8)
+            if abs(px - cx) < arch_width:
+                return "opening"
+        return None
+
+    def in_gate_frame(px, py):
+        """Gate frame (thick border around the opening)."""
+        frame_t = 40
+        # Check if in frame but not in opening
+        # Expand gate bounds by frame thickness
+        if abs(px - cx) < gate_w // 2 + frame_t and gate_top - frame_t < py < gate_bot + frame_t:
+            if not in_gate(px, py):
+                return True
+        # Arch frame
+        if py < gate_top + arch_r + frame_t and py > gate_top - frame_t:
+            dist_from_top = gate_top + arch_r - py
+            if dist_from_top > 0:
+                arch_width = (gate_w // 2 + frame_t) * (1 - (dist_from_top / (arch_r + frame_t)) ** 0.8)
+                if abs(px - cx) < arch_width and not in_gate(px, py):
+                    return True
+        return False
+
+    # Fill gate frame with bright Matrix characters
+    step = 14
+    for y in range(gate_top - 60, gate_bot + 60, step):
+        for x in range(cx - gate_w // 2 - 60, cx + gate_w // 2 + 60, step):
+            if in_gate_frame(x, y):
+                a = random.uniform(0.65, 0.92)
+                draw.text((x, y), random.choice(chars),
+                          fill=blend(BG, bright, a), font=font_md)
+
+    # Light streaming through the gate (inside the opening)
+    for y in range(gate_top, gate_bot, step):
+        for x in range(cx - gate_w // 2 + 5, cx + gate_w // 2 - 5, step):
+            if in_gate(x, y):
+                # Bright interior light
+                dist_from_center = abs(x - cx) / (gate_w // 2)
+                a = random.uniform(0.2, 0.5) * (1 - dist_from_center * 0.5)
+                draw.text((x, y), random.choice(MATRIX_CHARS),
+                          fill=blend(BG, bright, a), font=font_sm)
+
+    # Matrix rain streams pouring through the gate
+    for col in range(cx - gate_w // 2 + 10, cx + gate_w // 2 - 10, 20):
+        stream_len = random.randint(15, 35)
+        start_y = random.randint(gate_top, gate_top + 200)
+        for i in range(stream_len):
+            y = start_y + i * 28
+            if y > gate_bot + 200:
+                break
+            t = i / stream_len
+            if i == 0:
+                color = blend(BG, bright, 0.92)
+            else:
+                color = blend(BG, green, max(0.08, 0.65 * (1 - t)))
+            draw.text((col, y), random.choice(MATRIX_CHARS), fill=color, font=font_sm)
+
+    # Radiant light from gate toward viewer
+    for angle_deg in range(-30, 31, 3):
+        angle = math.radians(angle_deg + 90)
+        for r in range(gate_h // 2, gate_h, 3):
+            x = cx + int(r * math.cos(angle) * 2)
+            y = gate_bot + int(r * math.sin(angle))
+            if 0 <= x < W and 0 <= y < H:
+                a = 0.04 * (1 - (r - gate_h // 2) / (gate_h // 2)) ** 1.5
+                if a > 0.002:
+                    draw.point((x, y), fill=blend(BG, bright, a))
+
+    # Verse
+    verse = '"Narrow is the gate, and few there be that find it."'
+    tw = draw.textlength(verse, font=font_verse)
+    draw.text(((W - tw) // 2, gate_bot + 80), verse,
+              fill=blend(BG, bright, 0.78), font=font_verse)
+    ref = "MATTHEW 7:14"
+    tw2 = draw.textlength(ref, font=font_md)
+    draw.text(((W - tw2) // 2, gate_bot + 130), ref,
+              fill=blend(BG, green, 0.55), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.3))
+    img.save("backgrounds/21-narrow-gate.png", "PNG", optimize=True)
+    print("Saved backgrounds/21-narrow-gate.png")
+
+
+# ─────────────────────────────────────────────────────────────
+# 22. Sword of the Spirit — Hebrews 4:12
+# ─────────────────────────────────────────────────────────────
+def wallpaper_sword_of_spirit():
+    """A sword of the Spirit made of Matrix characters with Hebrews 4:12."""
+    img = Image.new("RGB", (W, H), BG)
+    draw = ImageDraw.Draw(img)
+    random.seed(412)
+
+    font_bg = get_font(10)
+    font_sm = get_font(14)
+    font_md = get_font(22)
+    font_lg = get_font(30)
+    font_verse = get_font(32)
+
+    green = (0, 255, 65)
+    bright = (180, 255, 210)
+    chars = MATRIX_CHARS + list("01✝†‡")
+
+    cx, cy = W // 2, H // 2
+
+    # Background scatter
+    for _ in range(5000):
+        x = random.randint(0, W)
+        y = random.randint(0, H)
+        a = random.uniform(0.02, 0.04)
+        draw.text((x, y), random.choice(MATRIX_CHARS), fill=blend(BG, green, a), font=font_bg)
+
+    # Sword pointing upward, centered
+    sword_len = 1400
+    blade_w = 50
+    guard_w = 300
+    guard_h = 40
+    grip_w = 35
+    grip_h = 200
+    pommel_r = 30
+
+    blade_top = cy - sword_len // 2 + 100
+    blade_bot = cy + 200
+    guard_y = blade_bot
+    grip_top = guard_y + guard_h // 2
+    grip_bot = grip_top + grip_h
+    pommel_cy = grip_bot + pommel_r
+
+    def in_sword(px, py):
+        """Sword shape: blade + guard + grip + pommel."""
+        # Blade (tapers to point at top)
+        if blade_top < py < blade_bot:
+            t = (py - blade_top) / (blade_bot - blade_top)
+            w = blade_w * t  # wider at bottom, pointed at top
+            if abs(px - cx) < w / 2:
+                return "blade"
+
+        # Blade edge highlight
+        if blade_top < py < blade_bot:
+            t = (py - blade_top) / (blade_bot - blade_top)
+            w = blade_w * t
+            if abs(abs(px - cx) - w / 2) < 5:
+                return "edge"
+
+        # Guard / crossguard
+        if abs(py - guard_y) < guard_h // 2:
+            if abs(px - cx) < guard_w // 2:
+                # Taper at ends
+                t = abs(px - cx) / (guard_w // 2)
+                if abs(py - guard_y) < (guard_h // 2) * (1 - t * 0.3):
+                    return "guard"
+
+        # Grip
+        if grip_top < py < grip_bot:
+            if abs(px - cx) < grip_w // 2:
+                return "grip"
+
+        # Pommel
+        if (px - cx)**2 + (py - pommel_cy)**2 < pommel_r**2:
+            return "pommel"
+
+        return None
+
+    # Fill sword with characters
+    step = 14
+    for y in range(blade_top - 10, int(pommel_cy + pommel_r + 10), step):
+        for x in range(cx - guard_w // 2 - 10, cx + guard_w // 2 + 10, step):
+            part = in_sword(x, y)
+            if part == "edge":
+                draw.text((x, y), random.choice("01"),
+                          fill=blend(BG, bright, 0.95), font=font_lg)
+            elif part == "blade":
+                # Brighter near center line
+                dist = abs(x - cx) / (blade_w / 2)
+                a = random.uniform(0.45, 0.75) * (1 - dist * 0.3)
+                draw.text((x, y), random.choice(chars),
+                          fill=blend(BG, green, a), font=font_md)
+            elif part == "guard":
+                a = random.uniform(0.60, 0.85)
+                draw.text((x, y), random.choice(chars),
+                          fill=blend(BG, bright, a), font=font_lg)
+            elif part == "grip":
+                # Wrapped grip pattern
+                stripe = int(math.sin(y * 0.2) * 3) > 0
+                a = 0.65 if stripe else 0.45
+                draw.text((x, y), random.choice(chars),
+                          fill=blend(BG, green, a), font=font_md)
+            elif part == "pommel":
+                a = random.uniform(0.55, 0.80)
+                draw.text((x, y), random.choice(chars),
+                          fill=blend(BG, bright, a), font=font_md)
+
+    # Energy radiating from blade edges
+    for y in range(blade_top, blade_bot, 8):
+        t = (y - blade_top) / (blade_bot - blade_top)
+        w = blade_w * t / 2
+        for side in [-1, 1]:
+            edge_x = cx + side * int(w)
+            for r in range(5, 60, 3):
+                ex = edge_x + side * r
+                a = 0.08 * (1 - r / 60) ** 1.5
+                if a > 0.003 and 0 <= ex < W:
+                    draw.point((ex, y), fill=blend(BG, bright, a))
+
+    # Verse
+    verse1 = '"For the word of God is living and active, sharper than any two-edged sword,'
+    verse2 = 'piercing to the division of soul and spirit."'
+    tw1 = draw.textlength(verse1, font=font_verse)
+    tw2 = draw.textlength(verse2, font=font_verse)
+    draw.text(((W - tw1) // 2, pommel_cy + 80), verse1,
+              fill=blend(BG, bright, 0.75), font=font_verse)
+    draw.text(((W - tw2) // 2, pommel_cy + 125), verse2,
+              fill=blend(BG, bright, 0.75), font=font_verse)
+    ref = "HEBREWS 4:12"
+    tw = draw.textlength(ref, font=font_md)
+    draw.text(((W - tw) // 2, pommel_cy + 175), ref,
+              fill=blend(BG, green, 0.55), font=font_md)
+
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.3))
+    img.save("backgrounds/22-sword-of-spirit.png", "PNG", optimize=True)
+    print("Saved backgrounds/22-sword-of-spirit.png")
+
+
 if __name__ == "__main__":
     wallpaper_matrix_rain()
     wallpaper_circuit()
@@ -1714,5 +2368,11 @@ if __name__ == "__main__":
     wallpaper_armor()
     wallpaper_lamb()
     wallpaper_alpha_omega()
-    print("Done! Generated 17 wallpapers.")
+    wallpaper_burning_bush()
+    wallpaper_eye_of_providence()
+    wallpaper_lion_of_judah()
+    wallpaper_narrow_gate()
+    wallpaper_sword_of_spirit()
+    print("Done! Generated 22 wallpapers.")
+
 
